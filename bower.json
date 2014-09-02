@@ -1,0 +1,25 @@
+{
+  "name": "levee",
+  "version": "1.0",
+  "homepage": "https://github.com/blaenk/levee",
+  "authors": [
+    "Jorge Israel Peña <jorge.israel.p@gmail.com>"
+  ],
+  "description": "web interface for rtorrent",
+  "main": "project.clj",
+  "keywords": [
+    "rtorrent"
+  ],
+  "license": "BSD",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap-less": "~3.2.0"
+  }
+}

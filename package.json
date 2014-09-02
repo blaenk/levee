@@ -1,0 +1,30 @@
+{
+  "name": "levee",
+  "version": "1.0.0",
+  "description": "rtorrent user interface",
+  "main": "Gruntfile.js",
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-less": "~0.11.4",
+    "grunt-contrib-watch": "~0.6.1"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blaenk/levee.git"
+  },
+  "keywords": [
+    "rtorrent"
+  ],
+  "author": "Jorge Israel Peña",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/blaenk/levee/issues"
+  },
+  "homepage": "https://github.com/blaenk/levee"
+}
