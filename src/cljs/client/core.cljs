@@ -73,6 +73,10 @@
 
 ;; TODO: set page titles on route
 
+(defroute "/" []
+  (.log js/console "redirecting to /downloads")
+  (common/redirect "/downloads"))
+
 (defroute trackers-path "/trackers" []
   (set-route-handler! #(om/build trackers/trackers-component %)))
 

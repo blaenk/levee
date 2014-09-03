@@ -44,67 +44,84 @@
   :main levee.main
   :jvm-opts ["-Xmx1g"]
   :profiles
-    {:dev
-     {:source-paths ["dev"]
-      :aliases
-        {"build" ^{:doc "build levee"}
-         ["do"
+    {:default [:base :system :user :provided :dev :local-dev]
+     :prod
+      {:env
+       ;; best to use strings here since env-vars and java props
+       ;; will themselves be strings, keeps it consistent
+       {:env "prod"
+        :port "3000"
+        :rtorrent "localhost:5000"
+        :db "levee.db"}}
+     :dev
+      {:source-paths ["dev"]
+       :aliases
+         {"clean" ^{:doc "also clean cljs"}
+          ["do"
            "clean"
-           ["cljsbuild" "once" "release"]
-           ["shell" "grunt" "less"]
-           ["uberjar"]]
-         "less" ^{:doc "watch less with grunt"}
-         ["do"
-          ["shell" "grunt"]]}
-      :plugins
-        [[com.cemerick/austin "0.1.5"]
-         [lein-environ "0.5.0"]
-         [lein-cljsbuild "1.0.3"]
-         [lein-figwheel "0.1.4-SNAPSHOT"]
-         [lein-shell "0.4.0"]
-         [lein-ancient "0.5.5"]]
-      :hooks [leiningen.cljsbuild]
-      :dependencies
-        [[org.clojure/tools.namespace "0.2.5"]
-         [org.clojure/tools.trace "0.7.8"]
-         [org.clojure/tools.nrepl "0.2.4"]
-         [cider/cider-nrepl "0.7.0"]
-         [figwheel "0.1.4-SNAPSHOT"]
-         [com.cemerick/piggieback "0.1.3"]
-         [im.chit/vinyasa "0.2.2" :exclusions [org.codehaus.plexus/plexus-utils]]]
-     :injections
-       [(require '[vinyasa.inject :as inject])
-        (inject/in
-          [vinyasa.pull :all]
+           ["cljsbuild" "clean"]]
 
-          clojure.core >
-          [clojure.tools.namespace.repl refresh]
-          [clojure.pprint pprint pp]
-          [clojure.stacktrace print-stack-trace])]
-     :figwheel
-       {:css-dirs ["resources/public/css"]}
-     :cljsbuild {
-       :builds
-         [{:id "dev"
-           :source-paths ["src/cljs" "src/extras/figwheel"]
-           :compiler
-             {:output-to "resources/public/js/main.js"
-              :output-dir "resources/public/js/"
-              :optimizations :none
-              :source-map true}}
-          {:id "release"
-           :source-paths ["src/cljs"]
-           :compiler
-             {:output-to "resources/public/js/main.js"
-              :optimizations :advanced
-              :pretty-print false
-              :preamble ["react/react.min.js"]
-              :externs
-                ["src/extras/externs/externs.js"
-                 "src/extras/externs/jquery-1.9.js"
-                 "react/externs/react.js"]}}]}}
+          "less" ^{:doc "watch less with grunt"}
+          ["do"
+           ["shell" "grunt" "watch"]]
+
+          "build" ^{:doc "build levee"}
+          ["do"
+            "clean"
+            ["shell" "grunt" "less"]
+            ["cljsbuild" "once" "prod"]
+            ["uberjar"]]}
+       :plugins
+         [[com.cemerick/austin "0.1.5"]
+          [lein-environ "1.0.0"]
+          [lein-cljsbuild "1.0.3"]
+          [lein-figwheel "0.1.4-SNAPSHOT"]
+          [lein-shell "0.4.0"]
+          [lein-ancient "0.5.5"]]
+       ;; :hooks [leiningen.cljsbuild]
+       :dependencies
+         [[org.clojure/tools.namespace "0.2.5"]
+          [org.clojure/tools.trace "0.7.8"]
+          [org.clojure/tools.nrepl "0.2.4"]
+          [cider/cider-nrepl "0.7.0"]
+          [figwheel "0.1.4-SNAPSHOT"]
+          [com.cemerick/piggieback "0.1.3"]
+          [im.chit/vinyasa "0.2.2"
+           :exclusions [org.codehaus.plexus/plexus-utils]]]
+      :injections
+        [(require '[vinyasa.inject :as inject])
+         (inject/in
+           [vinyasa.pull :all]
+
+           clojure.core >
+           [clojure.tools.namespace.repl refresh]
+           [clojure.pprint pprint pp]
+           [clojure.stacktrace print-stack-trace])]
+      :figwheel
+        {:css-dirs ["resources/public/css"]}
+      }
      :uberjar
       {:omit-source true
        ; only use this here, not in dev else stuff breaks
-       :aot :all}})
+       :aot :all}}
+  :cljsbuild
+   {:builds
+    {:dev
+      {:source-paths ["src/cljs" "src/extras/figwheel"]
+       :compiler
+        {:output-to "resources/public/js/main.js"
+         :output-dir "resources/public/js/cljs/"
+         :optimizations :none
+         :source-map true}}
+     :prod
+      {:source-paths ["src/cljs"]
+       :compiler
+        {:output-to "resources/public/js/main.js"
+         :optimizations :advanced
+         :pretty-print false
+         ; :preamble ["react/react.min.js"]
+         :externs
+         ["src/extras/externs/externs.js"
+          "src/extras/externs/jquery-1.9.js"
+          "react/externs/react.js"]}}}})
 

@@ -44,7 +44,9 @@
 (defn file-tree [files]
   (letfn
     [(group-tree [tree]
-       (clojure.set/rename-keys (group-by map? tree) {true :files false :folders}))
+       (clojure.set/rename-keys
+         (group-by map? tree)
+         {true :files false :folders}))
 
      (expand [files]
        (if (and (= (count files) 1)
@@ -391,7 +393,7 @@
                             {:erase true}
                             (fn [m]
                               (om/update! downloads m)
-                              (.setToken common/history "/downloads")))))
+                              (common/redirect "/downloads")))))
                       (js/alert
                         (cond
                           (not (empty? @locks)) (str "locked by " (clojure.string/join ", " @locks))

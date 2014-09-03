@@ -20,6 +20,9 @@
     (.setUseFragment false)
     (.setPathPrefix "")))
 
+(defn redirect [to]
+  (.setToken history to))
+
 (defn api-get [endpoint f & {:keys [error-handler]}]
   (GET endpoint
     {:handler f
@@ -60,7 +63,7 @@
 (defn- app-link-handler [e]
   (when (not= 1 (.-button e))
     (.preventDefault e)
-    (.setToken history (.getAttribute (.-target e) "href"))))
+    (redirect (.getAttribute (.-target e) "href"))))
 
 (defelem app-link [to text]
   "creates a link that prevents default
