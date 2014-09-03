@@ -15,5 +15,5 @@ pom.xml
 .nrepl-port
 .repl
 .lein-repl-history
-conf.clj
 levee.dev.db
+profiles.clj
