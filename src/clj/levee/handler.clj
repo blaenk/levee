@@ -2,14 +2,19 @@
   (:require
     [ring.util.response :as response]
 
-    [ring.middleware.accept-param :refer [wrap-accept-param accept-format?]]
-    [ring.middleware.reload :as reload]
     [ring.middleware.session.cookie :refer [cookie-store]]
-    [ring.middleware.gzip :refer [wrap-gzip]]
-    [ring.middleware.json
-      :refer [wrap-json-response
-              wrap-json-body
-              wrap-json-params]]
+    [ring.middleware
+     [logger :refer [wrap-with-logger]]
+     [accept-param :refer [wrap-accept-param accept-format?]]
+     [reload :as reload]
+     [gzip :refer [wrap-gzip]]
+     [json :refer [wrap-json-response
+                   wrap-json-body
+                   wrap-json-params]]]
+
+    [prone.middleware :as prone]
+
+    [environ.core :refer [env]]
 
     [compojure.route :as route]
     [compojure.core :refer [defroutes routes context GET POST PUT DELETE]]
@@ -55,7 +60,8 @@
 (def app
   (-> app-routes
       (friend/authenticate
-        {:credential-fn  (partial creds/bcrypt-credential-fn db/get-user-by-name)
+        {:credential-fn
+          (partial creds/bcrypt-credential-fn db/get-user-by-name)
          :workflows [(workflows/interactive-form)]
          :allow-anon? true
          :login-uri "/login"
@@ -73,5 +79,7 @@
       (wrap-json-response)
       (wrap-accept-param)
       (wrap-gzip)
+      (wrap-with-logger)
+      (prone/wrap-exceptions)
       (hot-reload)))
 
