@@ -3,7 +3,7 @@ module.exports = function(grunt) {
     less: {
       development: {
         options: {
-          paths: ["deps"],
+          paths: ["bower_components"],
           compress: true,
           yuicompress: true,
           optimization: 2

@@ -23,9 +23,10 @@
      [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]
      [:link {:rel "icon" :type "image/png" :href "/img/favicon.png"}]
      [:title "LEVEE"]
-     (include-css "//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
-                  "//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"
-                  "/css/style.css")
+     (include-css
+       "//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
+       "//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"
+       "/css/style.css")
      (google-fonts "Noto Sans" :sizes [400 700] :italics :all)]
     [:body
      [:div.upload-overlay]
@@ -58,8 +59,9 @@
      [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]
      [:link {:rel "icon" :type "image/png" :href "/img/favicon.png"}]
      [:title "LEVEE"]
-     (include-css "//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
-                  "/css/style.css")
+     (include-css
+       "//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
+       "/css/style.css")
      (google-fonts "Noto Sans" :sizes [400 700] :italics :all)]
     [:body
      [:div#root.container body]]))
