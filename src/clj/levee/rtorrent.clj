@@ -8,7 +8,6 @@
                      parse-metainfo]]
             [clojure.java.io :as io]
             [clojure.walk :refer [keywordize-keys]]
-            [taoensso.timbre :refer [info]]
             [clojure.pprint :as pp]
             [clj-time.core :refer [now]]
             [clj-time.coerce :refer [to-string]]
@@ -38,7 +37,6 @@
 
 (defn call [& args]
   "helper function for calling rtorrent with predefined endpoint"
-  ;; (info (str "rtorrent call:" \newline (with-out-str (pp/pprint args))))
   (if (= (.getScheme (URI. endpoint)) "scgi")
     (apply scgi/call endpoint args)
     (apply xml-rpc/call endpoint args)))
