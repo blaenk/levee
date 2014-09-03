@@ -22,10 +22,8 @@
     [clj-time.core :refer [in-seconds interval now weeks from-now]]
 
     [levee.db :as db]
-    [levee.config :as config]
-
+    [levee.common :refer [dev?]]
     [levee.views.layout :as layout]
-
     [levee.routes [downloads :as downloads]
                   [trackers :as trackers]
                   [users :as users]
@@ -33,17 +31,16 @@
                   [common :refer [handle-resource]]]))
 
 ;; TODO: use cljs style separate file instead
-(defn dev? [] true)
-
 (defn hot-reload [handler]
   (if (dev?)
     (reload/wrap-reload handler)
     handler))
 
 (defroutes base-routes
+  ;; TODO: leave this to nginx
   (route/files "/" {:root "resources/public"})
-  ;; (GET "/*" [] (friend/authenticated (layout/app)))
-  (route/not-found (layout/external [:h5 "404"])))
+  (GET "/*" [] (friend/authenticated (layout/app)))
+  )
 
 (def app-routes
   (routes
@@ -66,7 +63,7 @@
       (compojure.handler/site
         {:session
          ;; TODO: make this configurable of course
-         {:store (cookie-store {:key (config/get [:secret])})
+         {:store (cookie-store {:key (env :secret)})
           :cookie-name "levee-session"
           :cookie-attrs
             {:max-age (-> (interval (now) (-> 2 weeks from-now))

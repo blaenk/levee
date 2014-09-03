@@ -2,6 +2,7 @@
   (:require [hiccup.page :refer [html5 include-css include-js]]
             [hiccup.element :refer [javascript-tag link-to]]
             [cheshire.core :refer [generate-string]]
+            [levee.common :refer [dev?]]
             [cemerick.austin.repls :refer [browser-connected-repl-js]]))
 
 (defn- google-fonts [name & {:keys [sizes italics]}]
@@ -34,23 +35,26 @@
      (when bootstrap
        (javascript-tag
          (str "window.levee_bootstrap = " (generate-string bootstrap) ";")))
+     (when (dev?)
+       (include-js "/js/cljs/goog/base.js"))
      (include-js
        "//code.jquery.com/jquery-1.11.0.min.js"
        "//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"
        "/js/moment.min.js"
        "/js/react-0.11.1.min.js"
-       "/js/out/goog/base.js" ;; TODO: remove in release
        "/js/ZeroClipboard.min.js"
        "/js/main.js")
-     ;; TODO: remove in release
-     (javascript-tag "goog.require('levee.client.common');")
-     (javascript-tag "goog.require('levee.client.components.upload');")
-     (javascript-tag "goog.require('levee.client.components.downloads');")
-     (javascript-tag "goog.require('levee.client.components.download');")
-     (javascript-tag "goog.require('levee.client.core');")
-     (javascript-tag "goog.require('figwheel');")
-     [:script (browser-connected-repl-js)]
-     ]))
+     (when (dev?)
+       (javascript-tag
+         (str
+           "goog.require('levee.client.common');\n"
+           "goog.require('levee.client.components.upload');\n"
+           "goog.require('levee.client.components.downloads');\n"
+           "goog.require('levee.client.components.download');\n"
+           "goog.require('levee.client.core');\n"
+           "goog.require('figwheel');")))
+     (when (dev?)
+       [:script (browser-connected-repl-js)])]))
 
 (defn external [body]
   (html5

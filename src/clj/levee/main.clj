@@ -16,10 +16,14 @@
 (defn start-server [port]
   (reset! server (run-server app {:port port})))
 
-(defn -main [& [port]]
-  (clojure.pprint/pprint @config/data)
+(defn generate-secret-key []
+  (subs (random/url-part 16) 0 16))
 
-  (let [port (config/get [:port])]
-    (start-server port)
-    (println (str "You can view the site at http://localhost:" port))))
+(defn -main []
+  (let [port (Integer/parseInt (env :port))]
+    (if (clojure.string/blank? (env :secret))
+      (println (str "Use this secret key: " (generate-secret-key)))
+      (do
+        (start-server port)
+        (println (str "Listening on port " port))))))
 

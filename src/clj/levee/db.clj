@@ -1,8 +1,9 @@
 (ns levee.db
   (:require [korma.db :refer [defdb sqlite3]]
-            [korma.core :refer :all]))
+            [korma.core :refer :all]
+            [environ.core :refer [env]]))
 
-(defdb db (sqlite3 {:db "levee.db"}))
+(defdb db (sqlite3 {:db (env :db)}))
 
 (defentity users)
 (defentity trackers)

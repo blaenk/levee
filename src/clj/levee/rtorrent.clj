@@ -12,7 +12,7 @@
             [clojure.pprint :as pp]
             [clj-time.core :refer [now]]
             [clj-time.coerce :refer [to-string]]
-            [levee.config :as config])
+            [environ.core :refer [env]])
   (:import java.net.URI
            org.apache.commons.io.IOUtils))
 
@@ -34,7 +34,7 @@
 ;;       :params ("85320F7A0686F7C5F7B7425FA94ECCD8A787E1A3" 0)}))
 
 (def endpoint
-  (str "scgi://" (config/get [:rtorrent])))
+  (str "scgi://" (env :rtorrent)))
 
 (defn call [& args]
   "helper function for calling rtorrent with predefined endpoint"
