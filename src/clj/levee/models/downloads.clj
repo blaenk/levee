@@ -1,6 +1,6 @@
 (ns levee.models.downloads
   (:require [levee.rtorrent :as rtorrent]
-            [levee.util :refer [base64-encode base64-decode]]
+            [levee.common :refer [base64-encode base64-decode]]
             [levee.models.users :as users]
             [me.raynes.fs :refer [base-name]]
             [ring.util.response :as response]))

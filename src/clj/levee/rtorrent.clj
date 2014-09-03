@@ -1,6 +1,6 @@
 (ns levee.rtorrent
   (:require [levee.scgi :as scgi]
-            [levee.util :refer [base64-encode base64-decode]]
+            [levee.common :refer [base64-encode base64-decode]]
             [necessary-evil.core :as xml-rpc]
             [bencode.core :as bencode]
             [bencode.metainfo.reader

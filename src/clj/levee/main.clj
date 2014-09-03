@@ -3,7 +3,8 @@
             [levee.handler :refer [app]]
             [levee.rtorrent :as rtorrent]
             [levee.db :as db]
-            [levee.config :as config])
+            [environ.core :refer [env]]
+            [crypto.random :as random])
   (:gen-class))
 
 (defonce server (atom nil))
