@@ -120,7 +120,6 @@
         {:output-to "resources/public/js/main.js"
          :optimizations :advanced
          :pretty-print false
-         ; :preamble ["react/react.min.js"]
          :externs
          ["src/extras/externs/externs.js"
           "src/extras/externs/jquery-1.9.js"
