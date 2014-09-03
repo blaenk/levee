@@ -8,9 +8,12 @@
      [http-kit "2.1.19"]
      [ring "1.3.1"]
      [ring/ring-json "0.3.1"]
+     [ring-accept-param "0.1.1"]
+     [bk/ring-gzip "0.1.1"]
+     [ring.middleware.logger "0.5.0"]
+     [prone "0.6.0"]
      [compojure "1.1.8"]
      [hiccup "1.0.5"]
-     [ring-accept-param "0.1.1"]
 
      [korma "0.4.0"]
      [org.xerial/sqlite-jdbc "3.7.15-M1"]
@@ -29,8 +32,6 @@
      ;; necessary-evil hasn't been updated in a while
      ;; and it has very old dependency constraints
      [necessary-evil "2.0.0" :exclusions [clj-time commons-codec]]
-
-     [bk/ring-gzip "0.1.1"]
 
      ;; cljs
      [org.clojure/clojurescript "0.0-2322"]
