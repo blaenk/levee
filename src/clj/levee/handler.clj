@@ -35,17 +35,13 @@
                   [invitations :as invitations]
                   [common :refer [handle-resource]]]))
 
-;; TODO: use cljs style separate file instead
 (defn hot-reload [handler]
   (if (dev?)
     (reload/wrap-reload handler)
     handler))
 
 (defroutes base-routes
-  ;; TODO: leave this to nginx
-  (route/files "/" {:root "resources/public"})
-  (GET "/*" [] (friend/authenticated (layout/app)))
-  )
+  (GET "/*" [] (friend/authenticated (layout/app))))
 
 (def app-routes
   (routes
