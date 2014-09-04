@@ -99,7 +99,7 @@
            [clojure.pprint pprint pp]
            [clojure.stacktrace print-stack-trace])]
       :figwheel
-        {:css-dirs ["assets/css"]}
+        {:css-dirs ["resources/public/css"]}
       }
      :uberjar
       {:omit-source true
@@ -110,14 +110,14 @@
     {:dev
       {:source-paths ["src/cljs" "src/extras/figwheel"]
        :compiler
-        {:output-to "assets/js/main.js"
-         :output-dir "assets/js/cljs/"
+        {:output-to "resources/public/js/main.js"
+         :output-dir "resources/public/js/cljs/"
          :optimizations :none
          :source-map true}}
      :prod
       {:source-paths ["src/cljs"]
        :compiler
-        {:output-to "assets/js/main.js"
+        {:output-to "resources/public/js/main.js"
          :optimizations :advanced
          :pretty-print false
          :externs
