@@ -11,9 +11,8 @@ pom.xml
 .lein-env
 /node_modules
 /bower_components
-/resources
 .nrepl-port
 .repl
 .lein-repl-history
-levee.dev.db
+db/levee.dev.db
 profiles.clj

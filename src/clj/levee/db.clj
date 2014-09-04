@@ -1,9 +1,10 @@
 (ns levee.db
   (:require [korma.db :refer [defdb sqlite3]]
             [korma.core :refer :all]
+            [me.raynes.fs :as fs]
             [environ.core :refer [env]]))
 
-(defdb db (sqlite3 {:db (env :db)}))
+(defdb db (sqlite3 {:db (.getPath (fs/file "/db" (env :db)))}))
 
 (defentity users)
 (defentity trackers)
