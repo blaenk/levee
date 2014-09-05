@@ -11,6 +11,9 @@ pom.xml
 .lein-env
 /node_modules
 /bower_components
+/resources/public/js/cljs
+/resources/public/js/main.js
+/resources/public/css/style.css
 .nrepl-port
 .repl
 .lein-repl-history
