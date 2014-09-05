@@ -4,7 +4,7 @@
             [me.raynes.fs :as fs]
             [environ.core :refer [env]]))
 
-(defdb db (sqlite3 {:db (.getPath (fs/file "/db" (env :db)))}))
+(defdb db (sqlite3 {:db (.getPath (fs/file "db" (env :db)))}))
 
 (defentity users)
 (defentity trackers)
@@ -12,15 +12,16 @@
 
 (defn get-users []
   (select users
-    (fields :id :email :username :password :token :role)))
+    (fields :id :email :username :roles)
+    (order :username)))
 
 (defn insert-user [user]
-  (let [filtered-map (select-keys user [:email :username :password :token :role])]
+  (let [filtered-map (select-keys user [:email :username :password :token :roles])]
     (insert users
       (values filtered-map))))
 
 (defn update-user [id user]
-  (let [filtered-map (select-keys user [:username :email :role])]
+  (let [filtered-map (select-keys user [:username :email :roles])]
     (update trackers
       (set-fields filtered-map)
       (where (= :id id)))))
@@ -55,7 +56,7 @@
 
 (defn get-user-by-token [token]
   (-> (select users
-        (fields :id :username :role)
+        (fields :id :username :roles)
         (where (= :token token))
         (limit 1))
       (first)))
@@ -65,9 +66,16 @@
     (fields :id :name :url :user :password :category)
     (order :name)))
 
+(defn get-tracker-by-id [id]
+  (-> (select trackers
+        (fields :id :name :url :user :password :category)
+        (where (= :id id))
+        (limit 1))
+      (first)))
+
 (defn insert-tracker [tracker]
   (let [filtered-map (select-keys tracker [:name :url :user :password :category])]
-    (insert users
+    (insert trackers
       (values filtered-map))))
 
 (defn update-tracker [id tracker]
