@@ -163,9 +163,9 @@
         locks (cheshire.core/parse-string (rtorrent/get-custom hash "levee-locks"))
         current-user (users/current-user req)]
     (if (or (get (:roles current-user) :levee.auth/admin)
-          (and
-           (= uploader (:username current-user))
-           (empty? locks)))
+            (and
+             (= uploader (:username current-user))
+             (empty? locks)))
       (do
         (rtorrent/call :d.erase hash)
         (response/response (get-downloads)))
