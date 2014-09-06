@@ -9,3 +9,6 @@
       :current
       db/get-user-by-name))
 
+(defn admin? [req]
+  (get (:roles (current-user req)) :levee.auth/admin))
+
