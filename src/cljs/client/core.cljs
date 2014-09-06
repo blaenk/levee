@@ -33,6 +33,7 @@
     {:downloads []
      :download {}
      :trackers []
+     :tracker {}
      :user {}
      :route-component (fn [])
      :uploading false
@@ -81,6 +82,32 @@
 
 (defroute trackers-path "/trackers" []
   (set-route-handler! #(om/build trackers/trackers-component %)))
+
+(defroute trackers-new-path "/trackers/new" []
+  (set-route-handler!
+    (fn [props]
+      (om/build trackers/new-tracker
+                {:trackers (:trackers props)
+                 :tracker {}}))))
+
+(defroute trackers-edit-path "/trackers/:id" [id]
+  (set-route-handler!
+    (fn [props]
+      (let [id (js/parseInt id)
+            already-set (= (get-in props [:tracker :id]) id)
+            loc (when-not already-set
+                  (find-cursor
+                    (:trackers props)
+                    #(= (:id %) id)))
+            found (not (nil? loc))]
+        (when (and (not already-set) found)
+          (om/update! (:tracker props) (om/value loc)))
+
+        (om/build trackers/edit-tracker
+                  {:tracker (:tracker props)
+                   :trackers (:trackers props)
+                   :tracker-id id
+                   :found (or already-set found)})))))
 
 (defroute downloads-path "/downloads" []
   (set-route-handler! #(om/build downloads/downloads-list %)))

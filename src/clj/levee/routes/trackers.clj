@@ -9,10 +9,10 @@
 (defroutes routes
   (context "/trackers" []
     (GET "/" req (friend/authenticated (handle-resource req (db/get-trackers))))
-    (POST "/" req (friend/authenticated nil))
+    (POST "/" req (friend/authenticated (trackers/create-tracker req)))
 
     (context "/:id" [id]
-      (GET "/" [] (friend/authenticated nil))
-      (PUT "/" [] (friend/authenticated nil))
-      (DELETE "/" [] (friend/authenticated nil)))))
+      (GET "/" req (friend/authenticated (trackers/edit-tracker-page id req)))
+      (PUT "/" req (friend/authenticated (trackers/edit-tracker id req)))
+      (DELETE "/" req (friend/authenticated (trackers/remove-tracker id req))))))
 
