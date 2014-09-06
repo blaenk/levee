@@ -5,18 +5,6 @@
             [me.raynes.fs :refer [base-name]]
             [ring.util.response :as response]))
 
-(defn filesize [size-in-bytes]
-  (if (= size-in-bytes 0)
-    "0 B"
-    (let [units [:B, :KB, :MB, :GB, :TB]
-          base (long
-                 (Math/floor
-                   (/ (Math/log size-in-bytes)
-                      (Math/log 1000))))
-         value (/ size-in-bytes (float (Math/pow 1000 base)))
-         suffix (name (get units base))]
-     (format "%.1f %s" value suffix))))
-
 (defn- get-progress [size completed]
   "calculate the percentage of a torrent"
   (if-not (= size 0)
@@ -38,9 +26,6 @@
         (if-not (= complete "1")
           "downloading"
           "seeding")))))
-
-(defn- get-file-size [size_bytes]
-  (filesize (Long/parseLong size_bytes)))
 
 (defn- construct-download [{:keys [hash_checking? open? active? multi_file?
                                    complete completed_chunks
@@ -64,13 +49,13 @@
    :seeders peers_complete
    :up_rate up_rate
    :down_rate down_rate
-   :total_uploaded (get-file-size up_total)})
+   :total_uploaded up_total})
 
 (defn- construct-file [{:keys [size_bytes completed_chunks size_chunks
                                priority path path_components]}]
   {:path path
    :path_components path_components
-   :size (get-file-size size_bytes)
+   :size size_bytes
    :progress (format "%.0f" (get-progress size_chunks completed_chunks))
    :enabled (not= priority "0")})
 

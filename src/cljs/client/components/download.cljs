@@ -148,7 +148,7 @@
 
            (if-not finished?
              [:span.file-progress.badge disabled-tooltip (:progress file)]
-             [:span.file-size.badge disabled-tooltip (:size file)])])))))
+             [:span.file-size.badge disabled-tooltip (common/filesize (:size file))])])))))
 
 (defn folder-view [{[path {:keys [files folders]}] :folder
                     download :download
@@ -403,7 +403,7 @@
              (when show-stats
                [:div.download-stats
                 [:div.ratio [:strong "Ratio: "] ratio]
-                [:div.ratio [:strong "Total Uploaded: "] total_uploaded]
+                [:div.ratio [:strong "Total Uploaded: "] (common/filesize total_uploaded)]
                 [:div.ratio [:strong "Up Rate: "] up_rate]
                 [:div.ratio [:strong "Down Rate: "] down_rate]
                 [:div.ratio [:strong "seeders: "] seeders]
