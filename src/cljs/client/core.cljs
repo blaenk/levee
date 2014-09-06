@@ -9,15 +9,18 @@
     [goog.history.EventType :as EventType]
     [dommy.utils :as utils]
     [dommy.core :as dommy]
-    [ajax.core :refer [GET POST json-response-format]]
 
     [levee.client.common :as common]
     [levee.client.components.upload :as upload]
+    [levee.client.components.users :as users]
     [levee.client.components.trackers :as trackers]
     [levee.client.components.downloads :as downloads]
-    [levee.client.components.download :as download])
+    [levee.client.components.download :as download]
+
+    [jayq.core :refer [$ on off ajax]])
   (:require-macros
     [cljs.core.async.macros :refer [go-loop]]
+    [jayq.macros :refer [ready]]
     [dommy.macros :refer [sel sel1 node]]))
 
 (enable-console-print!)
@@ -47,7 +50,7 @@
       (.setItem "search-sort" (get-in new-val [:search :sort]))
       (.setItem "file-collapsed" (str (get-in new-val [:file-settings :collapsed]))))))
 
-(common/api-get "/users/current"
+(common/api :get "/users/current"
   (fn [res] (swap! app-state #(assoc % :user res))))
 
 (.ready (js/jQuery js/document)

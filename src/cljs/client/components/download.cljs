@@ -9,7 +9,6 @@
     [goog.history.EventType :as EventType]
     [dommy.utils :as utils]
     [dommy.core :as dommy]
-    [ajax.core :refer [GET POST json-response-format]]
     [levee.client.common :as common]
     [clojure.data :refer [diff]])
   (:require-macros
@@ -228,7 +227,7 @@
         (let [diff (detect-enabled-changes
                       (om/get-state owner :files-enabled)
                       (:files next-props))]
-          (common/api-post (str "/downloads/" (:hash download) "/files")
+          (common/api :post (str "/downloads/" (:hash download) "/files")
             {:priorities diff}
             (fn [m]
               (if (:success m)
@@ -295,7 +294,7 @@
           (str "/downloads/" hash)
           #(om/update! download %))
 
-        (common/api-get (str "/downloads/" hash "/files")
+        (common/api :get (str "/downloads/" hash "/files")
           #(om/update! download [:files] %)))
 
       (om/set-state! owner :websocket
@@ -357,7 +356,7 @@
                     (if locked "unlock" "lock")
                     (if locked (common/glyphicon "link") (common/glyphicon "lock"))
                     (fn [e]
-                      (common/api-post (str "/downloads/" hash "/lock-toggle")
+                      (common/api :post (str "/downloads/" hash "/lock-toggle")
                         {:username username}
                         (fn [m]
                           (.log js/console m)
@@ -372,24 +371,24 @@
                 (if (or (= state "closed") (= state "stopped"))
                  (command-button {:class "btn-success"} "start" (common/glyphicon "play")
                    (fn [e]
-                     (common/api-post (str "/downloads/" hash "/start")
+                     (common/api :post (str "/downloads/" hash "/start")
                        {:start true}
                        (fn [m] (om/update! download m)))))
 
                  (command-button {:class "btn-warning"} "stop" (common/glyphicon "stop")
                    (fn [e]
-                    (common/api-post (str "/downloads/" hash "/stop")
+                    (common/api :post (str "/downloads/" hash "/stop")
                       {:stop true}
                       (fn [m] (om/update! download m))))))
 
                 (command-button {:class "btn-danger"} "erase" (common/glyphicon "remove")
                   (fn [e]
-                    (if (or (common/is-admin user)
-                          (and (= uploader username) (empty? @locks)))
+                    (if (or (common/is-admin @user)
+                            (and (= uploader username) (empty? @locks)))
                       (when (js/confirm "are you sure you want to delete this?")
                         (do
                           (.close (om/get-state owner :websocket))
-                          (common/api-post (str "/downloads/" hash "/erase")
+                          (common/api :post (str "/downloads/" hash "/erase")
                             {:erase true}
                             (fn [m]
                               (om/update! downloads m)

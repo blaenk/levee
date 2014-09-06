@@ -9,7 +9,6 @@
     [goog.history.EventType :as EventType]
     [dommy.utils :as utils]
     [dommy.core :as dommy]
-    [ajax.core :refer [GET POST json-response-format]]
     [levee.client.common :as common])
   (:require-macros
     [cljs.core.async.macros :refer [go]]

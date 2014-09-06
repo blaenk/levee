@@ -7,7 +7,6 @@
     [sablono.core :as html :refer-macros [html defelem defhtml]]
     [goog.events :as events]
     [goog.history.EventType :as EventType]
-    [ajax.core :refer [GET POST json-response-format]]
     [levee.client.common :as common]
     [clojure.data :refer [diff]]
     [jayq.core :refer [$ on off ajax]])

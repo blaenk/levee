@@ -9,7 +9,7 @@
     [goog.history.EventType :as EventType]
     [dommy.utils :as utils]
     [dommy.core :as dommy]
-    [ajax.core :refer [GET POST json-response-format]])
+    [jayq.core :refer [ajax]])
   (:require-macros
     [cljs.core.async.macros :refer [go]]
     [dommy.macros :refer [sel sel1 node]])
@@ -23,31 +23,43 @@
 (defn redirect [to]
   (.setToken history to))
 
-(defn api-get [endpoint f & {:keys [error-handler]}]
-  (GET endpoint
-    {:handler f
-     :error-handler
-      (or error-handler
-          (fn [res]
-            (.log js/console "error in api-get")
-            (.log js/console res)))
-     :response-format (json-response-format {:keywords? true})
-     :keywords? true
-     :headers {:accept "application/json"}}))
+(defn api
+  "last param is an success callback or a settings map:
 
-(defn api-post [endpoint params f & {:keys [error-handler]}]
-  (POST endpoint
-    {:format :json
-     :params params
-     :handler f
-     :error-handler
-      (or error-handler
-          (fn [res]
-            (.log js/console "error in api-post")
-            (.log js/console res)))
-      :response-format (json-response-format {:keywords? true})
-      :keywords? true
-      :headers {:accept "application/json"}}))
+   (api :get \"/trackers\" (fn [m] done))
+
+   (api :get \"/trackers\"
+     {:success (fn [m] done)
+      :error (fn [m] error)}
+
+   can also be called with data where last param
+   is also success callback or settings map:
+
+   (api :post \"/trackers\" {:name \"test\"}
+     (fn [m] done))"
+
+  ([method endpoint fn-or-map]
+   (api method endpoint nil fn-or-map))
+
+  ([method endpoint data fn-or-map]
+   (let [defaults {:type (name method)
+                   :contentType "application/json; charset=UTF-8"
+                   :converters
+                     {"json clojure" #(js->clj % :keywordize-keys true)}
+                   :data (if (or
+                               (keyword? data)
+                               (symbol? data)
+                               (map? data)
+                               (coll? data)
+                               (satisfies? cljs.core/IEncodeJS data))
+                           (.stringify js/JSON (clj->js data))
+                           data)
+                   :dataType "json clojure"}
+         settings (if (fn? fn-or-map)
+                    {:success fn-or-map}
+                    fn-or-map)
+         merged (merge defaults settings)]
+     (ajax endpoint merged))))
 
 (defelem spinner []
   [:div.spinner
@@ -80,7 +92,7 @@
       (set! (.-levee_bootstrap js/window) nil))
     (do
       (.log js/console "couldn't bootstrap; getting")
-      (api-get endpoint (fn [res] (f res))))))
+      (api :get endpoint f))))
 
 (defn fuzzy-search [search]
   "creates a case-insensitive regex where spaces become .*"

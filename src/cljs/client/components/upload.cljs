@@ -7,7 +7,6 @@
     [sablono.core :as html :refer-macros [html defelem defhtml]]
     [goog.events :as events]
     [goog.history.EventType :as EventType]
-    [ajax.core :refer [GET POST json-response-format]]
     [levee.client.common :as common]
     [clojure.data :refer [diff]]
     [jayq.core :refer [$ on off ajax]])
@@ -70,33 +69,32 @@
               :on-click
                (fn [e]
                  (om/set-state! owner :uploading true)
-                 (ajax "/downloads"
-                  {:xhr
-                   (fn []
-                     (let [xhr (js/XMLHttpRequest.)]
-                       (.addEventListener (.-upload xhr) "progress"
-                         (fn [e]
-                           (let [progress (if (.-lengthComputable e)
-                                            (/ (* (.-loaded e) 100) (.-total e))
-                                            0)]
-                             (om/set-state! owner :upload-progress progress)))
-                         false)
-                       xhr))
-                   :type "POST"
-                   :processData false
-                   :data (let [formdata (js/FormData.)]
-                           (.append formdata "file" file)
-                           (.append formdata "start" (.-checked (om/get-node owner "start-checkbox")))
-                           formdata)
-                   :contentType false
-                   :success
-                    (fn [d]
-                      (om/set-state! owner :uploading false)
-                      (put! remove-chan [:remove file])
-                      (om/update! search [:scope] "mine")
-                      (om/update! search [:sort] "recent")
-                      (om/update! search [:pattern] "")
-                      )}))}
+                 (let [formdata (js/FormData.)
+                       start? (.-checked (om/get-node owner "start-checkbox"))]
+                   (.append formdata "file" file)
+                   (.append formdata "start" start?)
+
+                   (common/api :post "/downloads" formdata
+                    {:xhr
+                     (fn []
+                       (let [xhr (js/XMLHttpRequest.)]
+                         (.addEventListener (.-upload xhr) "progress"
+                           (fn [e]
+                             (let [progress (if (.-lengthComputable e)
+                                              (/ (* (.-loaded e) 100) (.-total e))
+                                              0)]
+                               (om/set-state! owner :upload-progress progress)))
+                           false)
+                         xhr))
+                     :processData false
+                     :contentType false
+                     :success
+                      (fn [d]
+                        (om/set-state! owner :uploading false)
+                        (put! remove-chan [:remove file])
+                        (om/update! search [:scope] "mine")
+                        (om/update! search [:sort] "recent")
+                        (om/update! search [:pattern] ""))})))}
              "upload"]
             [:button.btn.btn-xs.btn-danger
              {:type "button"
@@ -197,7 +195,7 @@
                 {:type "button"
                  :on-click
                   (fn [e]
-                    (common/api-post "/downloads/magnet"
+                    (common/api :post "/downloads/magnet"
                       {:uri (.-value (om/get-node owner "magnet-box"))
                        :start (.-checked (om/get-node owner "magnet-start"))}
                       (fn [d]
