@@ -392,7 +392,7 @@ ul.nav.navbar-nav > li > a {
   // visibility: hidden; // visible
 }
 
-table.table.trackers {
+table.table.trackers, table.table.users {
   tbody > tr > td {
     vertical-align: inherit;
   }
@@ -411,10 +411,6 @@ table.table.trackers {
     margin-right: 5px;
     background-color: @brand-info;
     cursor: default;
-  }
-
-  .file.file-disabled .badge {
-    background-color: @brand-danger;
   }
 
   .file {
@@ -443,6 +439,7 @@ table.table.trackers {
     .badge {
       background-color: @brand-success;
       cursor: default;
+      margin-left: 5px;
     }
 
     &.file-incomplete {
@@ -457,8 +454,10 @@ table.table.trackers {
       }
     }
 
-    .badge {
-      margin-left: 5px;
+    &.file.file-disabled {
+      .badge {
+        background-color: @brand-danger;
+      }
     }
   }
 
