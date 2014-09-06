@@ -75,7 +75,8 @@
 (defn- app-link-handler [e]
   (when (not= 1 (.-button e))
     (.preventDefault e)
-    (redirect (.getAttribute (.-target e) "href"))))
+    (.stopPropagation e)
+    (redirect (.getAttribute (.-currentTarget e) "href"))))
 
 (defelem app-link [to text]
   "creates a link that prevents default
