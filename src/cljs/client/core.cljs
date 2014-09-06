@@ -53,31 +53,30 @@
 (common/api :get "/users/current"
   (fn [res] (swap! app-state #(assoc % :user res))))
 
-(.ready (js/jQuery js/document)
-  (fn []
-    (goog.events/listen common/history EventType/NAVIGATE
-      (fn [e]
-        (.log js/console (str "[LEVEE] navigated to " (.-token e)))
-        (secretary/dispatch! (.-token e))))
-      (.setEnabled common/history true)
+(ready
+  (goog.events/listen
+    common/history EventType/NAVIGATE
+    (fn [e]
+      (.log js/console (str "[LEVEE] navigated to " (.-token e)))
+      (secretary/dispatch! (.-token e))))
 
-      (.tooltip (js/jQuery "body")
-        #js {:selector "[data-toggle=\"tooltip\"]"
-             :container "body"})
+  (.setEnabled common/history true)
 
-      (.config js/ZeroClipboard #js {:swfPath "/js/ZeroClipboard.swf"})
-      ))
+  (.tooltip ($ "body")
+            #js {:selector "[data-toggle=\"tooltip\"]"
+                 :container "body"})
+
+  (.config js/ZeroClipboard #js {:swfPath "/js/ZeroClipboard.swf"}))
 
 (defn- set-route-handler! [f]
   (swap! app-state assoc :route-component f))
 
-(defn- find-download [cursor hash]
-  (get cursor (first (keep-indexed #(when (= (:hash %2) hash) %1) cursor))))
+(defn- find-cursor [cursor condition]
+  (get cursor (first (keep-indexed #(when (condition %2) %1) cursor))))
 
 ;; TODO: set page titles on route
 
 (defroute "/" []
-  (.log js/console "redirecting to /downloads")
   (common/redirect "/downloads"))
 
 (defroute trackers-path "/trackers" []
@@ -91,7 +90,10 @@
   (set-route-handler!
     (fn [props]
       (let [already-set (= (get-in props [:download :hash]) hash)
-            loc (when-not already-set (find-download (:downloads props) hash))
+            loc (when-not already-set
+                  (find-cursor
+                    (:downloads props)
+                    #(= (:hash %) hash)))
             found (not (nil? loc))]
         (when (and (not already-set) found)
           (om/update! (:download props) (om/value loc)))
