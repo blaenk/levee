@@ -56,7 +56,7 @@
             [:div.checkbox
              {:data-toggle "tooltip"
               :data-placement "top"
-              :title "don't start it if you need to select which files to download"}
+              :title "don't start it if you need to choose which files to download"}
              [:label
               [:input
                {:type "checkbox"
@@ -183,6 +183,9 @@
                  (fn [e])}]
               [:span.input-group-addon
                [:div.checkbox
+                {:data-toggle "tooltip"
+                 :data-placement "top"
+                 :title "don't start it if you need to choose which files to download"}
                 [:label
                   [:input
                    {:type "checkbox"
