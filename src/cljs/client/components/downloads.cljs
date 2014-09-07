@@ -52,7 +52,7 @@
         :class (when (= (get-in cursor [k]) prop) "dropdown-menu-selected")}
        prop]])
 
-(defn download-view [{:keys [download user]} owner]
+(defn download-view [{:keys [download current-user]} owner]
   (om/component
     (html
       [:li.download
@@ -67,7 +67,7 @@
         (common/app-link {:class "name"}
           (str "/downloads/" (clojure.string/lower-case (:hash download)))
           (:name download))
-        [:div {:class (when (is-locked user download) "download-lock-status")
+        [:div {:class (when (is-locked current-user download) "download-lock-status")
                :data-toggle "tooltip"
                :data-placement "left"
                :title "locked"}]])))
@@ -132,7 +132,7 @@
 (defn- build-download-view [d]
   (om/build download-view d {:react-key (get-in d [:download :hash])}))
 
-(defn downloads-list [{:keys [downloads search user]} owner]
+(defn downloads-list [{:keys [downloads search current-user]} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -166,10 +166,10 @@
       (html
         (common/spinner-when (empty? downloads)
           (let [regex (common/fuzzy-search (:pattern search))
-                scoped (filter #((scopes (:scope search)) user %) downloads)
+                scoped (filter #((scopes (:scope search)) current-user %) downloads)
                 filtered (filter #(.test regex (:name %)) scoped)
                 sorted (sort (sorts (:sort search)) filtered)
-                augmented (map (fn [d] {:download d :user user}) sorted)]
+                augmented (map (fn [d] {:download d :current-user current-user}) sorted)]
             [:div
               (om/build downloads-search
                 {:search search

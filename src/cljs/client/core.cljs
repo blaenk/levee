@@ -11,6 +11,7 @@
     [dommy.core :as dommy]
 
     [levee.client.common :as common]
+
     [levee.client.components.upload :as upload]
     [levee.client.components.users :as users]
     [levee.client.components.trackers :as trackers]
@@ -34,7 +35,9 @@
      :download {}
      :trackers []
      :tracker {}
+     :users []
      :user {}
+     :current-user {}
      :route-component (fn [])
      :uploading false
      :file-settings
@@ -52,7 +55,7 @@
       (.setItem "file-collapsed" (str (get-in new-val [:file-settings :collapsed]))))))
 
 (common/api :get "/users/current"
-  (fn [res] (swap! app-state #(assoc % :user res))))
+  (fn [res] (swap! app-state #(assoc % :current-user res))))
 
 (ready
   (goog.events/listen
@@ -79,6 +82,9 @@
 
 (defroute "/" []
   (common/redirect "/downloads"))
+
+(defroute users-path "/users" []
+  (set-route-handler! #(om/build users/users-component %)))
 
 (defroute trackers-path "/trackers" []
   (set-route-handler! #(om/build trackers/trackers-component %)))
@@ -128,7 +134,7 @@
         (om/build download/download-page
           {:download (:download props)
            :downloads (:downloads props)
-           :user (:user props)
+           :current-user (:current-user props)
            :hash hash
            :found (or already-set found)
            :file-settings (:file-settings props)})))))
@@ -182,7 +188,9 @@
                    (.preventDefault e)
                    (om/transact! props #(update-in % [:uploading] not)))}
                "upload"]]
-             [:li (common/app-link "/trackers" "trackers")]]
+             [:li (common/app-link "/trackers" "trackers")]
+             [:li (common/app-link "/users" "users")]
+             ]
             [:ul.nav.navbar-nav.navbar-right
              [:li  (html/link-to "/logout" "logout")]]]]]
 

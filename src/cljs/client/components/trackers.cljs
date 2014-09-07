@@ -31,13 +31,13 @@
           [:button.btn.btn-warning.clipboard
            {:type "button" :data-clipboard-text password}
            (common/glyphicon "asterisk")]]
-         (when (common/is-admin (:user props))
+         (when (common/is-admin (:current-user props))
            [:td.text-center
             (common/app-link
               {:class "btn btn-primary"}
               (str "/trackers/" id) (common/glyphicon "edit"))
             ])
-         (when (common/is-admin (:user props))
+         (when (common/is-admin (:current-user props))
            [:td.text-center
             [:button.btn.btn-danger
              {:type "button"
@@ -50,7 +50,7 @@
                       (common/redirect "/trackers")))))}
              (common/glyphicon "remove")]])]))))
 
-(defn trackers-component [{:keys [trackers user]} owner]
+(defn trackers-component [{:keys [trackers current-user]} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -84,10 +84,10 @@
             [:th "Category"]
             [:th.text-center "User"]
             [:th.text-center "Pass"]
-            (when (common/is-admin user) [:th])
-            (when (common/is-admin user) [:th])]]
+            (when (common/is-admin current-user) [:th])
+            (when (common/is-admin current-user) [:th])]]
           [:tbody
-           (map #(om/build tracker-component {:trackers trackers :tracker % :user user}) trackers)]]
+           (map #(om/build tracker-component {:trackers trackers :tracker % :current-user current-user}) trackers)]]
          [:form {:role "form"}
           [:div.form-group
            [:div.input-group.col-sm-12

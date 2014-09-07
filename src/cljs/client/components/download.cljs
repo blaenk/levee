@@ -169,41 +169,40 @@
 
     om/IRenderState
     (render-state [_ {:keys [collapsed root? enabled]}]
-      (let [file-count (count files)]
-        (html
-          [:div.folder
-           [:div.folder-tab
-            {:on-click #(om/update-state! owner :collapsed not)}
-            (when editing
-              [:span.file-edit
-               {:on-click
-                (fn [e]
-                  (.stopPropagation e)
+      (html
+        [:div.folder
+         [:div.folder-tab
+          {:on-click #(om/update-state! owner :collapsed not)}
+          (when editing
+            [:span.file-edit
+             {:on-click
+              (fn [e]
+                (.stopPropagation e)
 
-                  (let [toggle (not enabled)]
-                    (doseq [file files]
-                      (om/transact! file #(assoc-in @file [:enabled] toggle)))
-                    (om/set-state! owner :enabled toggle)))}
-               (if enabled "✔" "✖")])
-            [:span.folder-name path]
-            [:span.badge
-             {:data-toggle "tooltip"
-              :data-placement "top"
-              :title "files in folder"}
-             file-count]]
-           (when (or root? (not collapsed))
-             [:div.entities
-               (map #(om/build file-view {:file % :download download :editing editing}
-                       {:react-key (get-in % [:id])})
+                (let [toggle (not enabled)]
+                  (doseq [file files]
+                    (om/transact! file #(assoc-in @file [:enabled] toggle)))
+                  (om/set-state! owner :enabled toggle)))}
+             (if enabled "✔" "✖")])
+          [:span.folder-name path]
+          [:span.badge
+           {:data-toggle "tooltip"
+            :data-placement "top"
+            :title "files in folder"}
+           (str (count files))]]
+         (when (or root? (not collapsed))
+           [:div.entities
+            (map #(om/build file-view {:file % :download download :editing editing}
+                            {:react-key (get-in % [:id])})
                  (sort-by (comp last :path_components) files))
-               (map #(om/build folder-view
-                       {:folder %
-                        :download download
-                        :file-settings file-settings
-                        :collapsed? (:collapsed file-settings)
-                        :editing editing}
-                       {:react-key (first %)})
-                 (sort-by first folders))])])))))
+            (map #(om/build folder-view
+                            {:folder %
+                             :download download
+                             :file-settings file-settings
+                             :collapsed? (:collapsed file-settings)
+                             :editing editing}
+                            {:react-key (first %)})
+                 (sort-by first folders))])]))))
 
 (defn detect-enabled-changes [original prs]
   (second
@@ -269,7 +268,7 @@
                :editing editing}
               {:init-state {:root? true}})]])))))
 
-(defn download-page [{:keys [download found hash file-settings downloads user]
+(defn download-page [{:keys [download found hash file-settings downloads current-user]
                       :as props} owner]
   (reify
     om/IInitState
@@ -318,7 +317,7 @@
                     progress uploader date-added
                     locks files total_uploaded
                     up_rate down_rate seeders leeches]} download
-            username (:username user)]
+            username (:username current-user)]
         (html
           (common/spinner-when (empty? download)
             [:div
@@ -383,7 +382,7 @@
 
                 (command-button {:class "btn-danger"} "erase" (common/glyphicon "remove")
                   (fn [e]
-                    (if (or (common/is-admin @user)
+                    (if (or (common/is-admin @current-user)
                             (and (= uploader username) (empty? @locks)))
                       (when (js/confirm "are you sure you want to delete this?")
                         (do
