@@ -111,167 +111,56 @@
 
     om/IRender
     (render [_]
-      (html
-        [:form {:role "form"}
-         [:div.form-group
-          [:div.input-group.col-sm-12
-           [:input.form-control
-            {:type "text"
-             :placeholder "name"
-             :on-change
-              (fn [e]
-                (om/transact!
-                  tracker
-                  #(assoc % :name (.. e -target -value))))
-             :value name
-             }]]]
-         [:div.form-group
-          [:div.input-group.col-sm-12
-           [:input.form-control
-            {:type "text"
-             :class "form-control"
-             :placeholder "url"
-             :on-change
-              (fn [e]
-                (om/transact!
-                  tracker
-                  #(assoc % :url (.. e -target -value))))
-             :value url
-             }]]]
-         [:div.form-group
-          [:div.input-group.col-sm-12
-           [:input.form-control
-            {:type "text"
-             :placeholder "category"
-             :on-change
-              (fn [e]
-                (om/transact!
-                  tracker
-                  #(assoc % :category (.. e -target -value))))
-             :value category
-             }]]]
-         [:div.form-group
-          [:div.input-group.col-sm-12
-           [:input.form-control
-            {:type "text"
-             :placeholder "user"
-             :on-change
-              (fn [e]
-                (om/transact!
-                  tracker
-                  #(assoc % :user (.. e -target -value))))
-             :value user
-             }]]]
-         [:div.form-group
-          [:div.input-group.col-sm-12
-           [:input.form-control
-            {:type "text"
-             :placeholder "password"
-             :on-change
-              (fn [e]
-                (om/transact!
-                  tracker
-                  #(assoc % :password (.. e -target -value))))
-             :value password
-             }]]]
-         [:div.form-group
-          [:div.input-group.col-sm-12
-           (common/app-link
-             {:class "btn btn-danger"}
-             "/trackers" "cancel")
-           [:button.btn.btn-primary.pull-right
-            {:type "button"
-             :on-click
-             (fn [e]
-               (common/api :put (str "/trackers/" tracker-id)
-                 @tracker
-                 (fn [m]
-                   (om/update! trackers m)
-                   (common/redirect "/trackers"))))}
-            "submit"]]]
-         ]))))
+      (letfn [(handler [k] (fn [e] (om/transact! tracker #(assoc % k (.. e -target -value)))))]
+        (html
+          [:form {:role "form"}
+           (common/form-input "name" name (handler :name))
+           (common/form-input "url" url (handler :url))
+           (common/form-input "category" category (handler :category))
+           (common/form-input "user" user (handler :user))
+           (common/form-input "password" password (handler :password))
+           [:div.form-group
+            [:div.input-group.col-sm-12
+             (common/app-link
+               {:class "btn btn-danger"}
+               "/trackers" "cancel")
+             [:button.btn.btn-primary.pull-right
+              {:type "button"
+               :on-click
+               (fn [e]
+                 (common/api :put (str "/trackers/" tracker-id)
+                   @tracker
+                   (fn [m]
+                     (om/update! trackers m)
+                     (common/redirect "/trackers"))))}
+              "submit"]]]
+           ])))))
 
 (defn new-tracker [{:keys [trackers]} owner]
   (reify
     om/IRenderState
     (render-state [_ {:keys [id name url user password category]}]
-      (html
-        [:form {:role "form"}
-         [:div.form-group
-          [:div.input-group.col-sm-12
-           [:input.form-control
-            {:type "text"
-             :placeholder "name"
-             :on-change
-              (fn [e]
-                (om/set-state!
-                  owner
-                  :name (.. e -target -value)))
-             :value name
-             }]]]
-         [:div.form-group
-          [:div.input-group.col-sm-12
-           [:input.form-control
-            {:type "text"
-             :class "form-control"
-             :placeholder "url"
-             :on-change
-              (fn [e]
-                (om/set-state!
-                  owner
-                  :url (.. e -target -value)))
-             :value url
-             }]]]
-         [:div.form-group
-          [:div.input-group.col-sm-12
-           [:input.form-control
-            {:type "text"
-             :placeholder "category"
-             :on-change
-              (fn [e]
-                (om/set-state!
-                  owner
-                  :category (.. e -target -value)))
-             :value category
-             }]]]
-         [:div.form-group
-          [:div.input-group.col-sm-12
-           [:input.form-control
-            {:type "text"
-             :placeholder "user"
-             :on-change
-              (fn [e]
-                (om/set-state!
-                  owner
-                  :user (.. e -target -value)))
-             :value user
-             }]]]
-         [:div.form-group
-          [:div.input-group.col-sm-12
-           [:input.form-control
-            {:type "text"
-             :placeholder "password"
-             :on-change
-              (fn [e]
-                (om/set-state!
-                  owner
-                  :password (.. e -target -value)))
-             :value password
-             }]]]
-         [:div.form-group
-          [:div.input-group.col-sm-12
-           (common/app-link
-             {:class "btn btn-danger"}
-             "/trackers" "cancel")
-           [:button.btn.btn-primary.pull-right
-            {:type "button"
-             :on-click
-             (fn [e]
-               (common/api :post "/trackers"
-                 (om/get-state owner)
-                 (fn [m]
-                   (om/update! trackers m)
-                   (common/redirect "/trackers"))))}
-            "submit"]]]
-         ]))))
+      (letfn [(handler [k] (fn [e] (om/set-state! owner k (.. e -target -value))))]
+        (html
+          [:form {:role "form"}
+            (common/form-input "name" name (handler :name))
+            (common/form-input "url" url (handler :url))
+            (common/form-input "category" category (handler :category))
+            (common/form-input "user" user (handler :user))
+            (common/form-input "password" password (handler :password))
+           [:div.form-group
+            [:div.input-group.col-sm-12
+             (common/app-link
+               {:class "btn btn-danger"}
+               "/trackers" "cancel")
+             [:button.btn.btn-primary.pull-right
+              {:type "button"
+               :on-click
+               (fn [e]
+                 (common/api :post "/trackers"
+                   (om/get-state owner)
+                   (fn [m]
+                     (om/update! trackers m)
+                     (common/redirect "/trackers"))))}
+              "submit"]]]])))))
 

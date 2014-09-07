@@ -121,3 +121,13 @@
 (defn is-admin [user]
   (get (set (:roles user)) "levee.auth/admin"))
 
+(defn form-input [placeholder value on-change]
+  [:div.form-group
+   [:div.input-group.col-sm-12
+    [:input.form-control
+     {:type "text"
+      :class "form-control"
+      :placeholder placeholder
+      :on-change on-change
+      :value value}]]])
+
