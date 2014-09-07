@@ -1,6 +1,7 @@
 (ns levee.models.trackers
   (:require
     [ring.util.response :as response]
+    [levee.routes.common :refer [handle-resource]]
     [levee.models.users :as users]
     [levee.db :as db]))
 
