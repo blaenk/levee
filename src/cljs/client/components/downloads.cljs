@@ -21,7 +21,7 @@
   (let [d (-> download :date-added js/Date.)
         current (.getDate d)]
     ;; 2 weeks - 1 day to give 1 day notice
-    (and (> (js/Date.) (.setDate d (+ current (- 14 1))))
+    (and (> (.getTime (js/Date.)) (.getTime (.setDate d (+ current (- 14 1)))))
          (empty? (:locks download)))))
 
 (defn- is-mine [user download]
@@ -37,7 +37,7 @@
   (.localeCompare (-> a :name .toLowerCase) (-> b :name .toLowerCase)))
 
 (defn- sort-by-recent [a b]
-  (- (- (-> a :date-added js/Date.) (-> b :date-added js/Date.))))
+  (- (- (-> a :date-added js/Date. .getTime) (-> b :date-added js/Date. .getTime))))
 
 (def ^:private sorts
   {"name" sort-by-name
