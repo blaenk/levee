@@ -9,8 +9,8 @@
      [ring "1.3.1"]
      [ring/ring-json "0.3.1"]
      [ring-accept-param "0.1.1"]
-     [bk/ring-gzip "0.1.1"]
      [ring.middleware.logger "0.5.0"]
+     [amalloy/ring-gzip-middleware "0.1.3"]
      [prone "0.6.0"]
      [compojure "1.1.8"]
      [hiccup "1.0.5"]
@@ -28,6 +28,9 @@
      [com.cemerick/friend "0.2.1" :exclusions [org.clojure/core.cache]]
 
      [me.raynes/fs "1.4.6"]
+
+     [crypto-random "1.2.0"]
+     [pandect "0.3.4"]
 
      ;; necessary-evil hasn't been updated in a while
      ;; and it has very old dependency constraints

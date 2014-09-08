@@ -16,15 +16,25 @@
 
 (defroutes routes
   (GET "/login" req (layout/external login-form))
-  (GET "/logout" req (friend/logout* (response/redirect (str (:context req) "/login"))))
+  (GET "/logout" req (friend/logout* (response/redirect "/login")))
+
+  (context "/invitations" []
+    (GET "/" req (friend/authorize #{:levee.auth/admin} (db/get-invitations)))
+    (POST "/" req (friend/authorize #{:levee.auth/admin} (users/create-invitation)))
+
+    (context "/:token" [token]
+      (DELETE "/" req (friend/authorize #{:levee.auth/admin} (users/remove-invitation token)))
+      (GET "/" req (layout/registration token))))
 
   (context "/users" []
-    (GET "/" [] (friend/authenticated nil))
-    (POST "/" req (friend/authenticated nil))
+    (GET "/" req (friend/authorize #{:levee.auth/admin} (handle-resource req (db/get-users))))
+    (POST "/" req (users/create-user req))
 
-    (GET "/current" req (friend/authenticated (response/response (dissoc (users/current-user req) :password))))
+    (GET "/current" req (friend/authenticated
+                          (response/response (dissoc (users/current-user req) :password))))
 
     (context "/:id" [id]
-      (PUT "/" req (friend/authenticated nil))
-      (DELETE "/" req (friend/authenticated nil)))))
+      (GET "/" req (friend/authorize #{:levee.auth/admin} (users/edit-user-page id req)))
+      (PUT "/" req (friend/authorize #{:levee.auth/admin} (users/edit-user id req)))
+      (DELETE "/" req (friend/authorize #{:levee.auth/admin} (users/remove-user id req))))))
 

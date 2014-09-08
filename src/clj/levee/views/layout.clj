@@ -70,3 +70,35 @@
     [:body
      [:div#root.container body]]))
 
+(defn registration [token]
+  (external
+    [:div.col-xs-12.col-sm-offset-3.col-sm-6.col-md-6.col-md-offset-3
+     [:div.navbar.navbar-default.navbar-static-top.external-nav {:role "navigation"}
+      [:div.container
+       [:div.navbar-header
+        [:p.navbar-text.external-scope "Registration"]]]]
+
+     [:form {:role "form" :action "/users" :method "post"}
+      [:div.form-group
+       [:div.input-group.col-xs-12
+        [:input.form-control
+         {:text "text"
+          :placeholder "username"
+          :name "username"}]]]
+      [:div.form-group
+       [:div.input-group.col-xs-12
+        [:input.form-control
+         {:text "text"
+          :placeholder "password"
+          :name "password"}]]]
+      [:div.form-group
+       [:div.input-group.col-xs-12
+        [:input.form-control
+         {:text "text"
+          :placeholder "email"
+          :name "email"}]]]
+      [:input {:type "hidden" :value token :name "token"}]
+      [:input.btn.btn-primary.pull-right
+       {:type "submit"
+        :value "create"}]
+      ]]))

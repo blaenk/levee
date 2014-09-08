@@ -37,6 +37,7 @@
      :tracker {}
      :users []
      :user {}
+     :invitations {}
      :current-user {}
      :route-component (fn [])
      :uploading false
@@ -55,7 +56,9 @@
       (.setItem "file-collapsed" (str (get-in new-val [:file-settings :collapsed]))))))
 
 (common/api :get "/users/current"
-  (fn [res] (swap! app-state #(assoc % :current-user res))))
+  (fn [res]
+    (.log js/console res)
+    (swap! app-state #(assoc % :current-user res))))
 
 (ready
   (goog.events/listen
@@ -85,6 +88,25 @@
 
 (defroute users-path "/users" []
   (set-route-handler! #(om/build users/users-component %)))
+
+(defroute users-edit-path "/users/:id" [id]
+  (set-route-handler!
+    (fn [props]
+      (let [id (js/parseInt id)
+            already-set (= (get-in props [:user :id]) id)
+            loc (when-not already-set
+                  (find-cursor
+                    (:users props)
+                    #(= (:id %) id)))
+            found (not (nil? loc))]
+        (when (and (not already-set) found)
+          (om/update! (:user props) (om/value loc)))
+
+        (om/build users/edit-user
+                  {:user (:user props)
+                   :users (:users props)
+                   :user-id id
+                   :found (or already-set found)})))))
 
 (defroute trackers-path "/trackers" []
   (set-route-handler! #(om/build trackers/trackers-component %)))
