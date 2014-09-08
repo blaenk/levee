@@ -22,7 +22,7 @@
 
 (defn update-user [id user]
   (let [filtered-map (select-keys user [:username :email :roles])]
-    (update trackers
+    (update users
       (set-fields filtered-map)
       (where (= :id id)))))
 
@@ -48,7 +48,7 @@
 
 (defn get-user-by-name [name]
   (some-> (select users
-            (fields :id :username :password :roles)
+            (fields :id :username :password :roles :email)
             (where (= :username name))
             (limit 1))
           (first)
@@ -56,8 +56,15 @@
 
 (defn get-user-by-token [token]
   (-> (select users
-        (fields :id :username :roles)
+        (fields :id :username :roles :email)
         (where (= :token token))
+        (limit 1))
+      (first)))
+
+(defn get-user-by-id [id]
+  (-> (select users
+        (fields :id :username :roles :email)
+        (where (= :id id))
         (limit 1))
       (first)))
 
@@ -97,7 +104,7 @@
     (insert invitations
       (values filtered-map))))
 
-(defn remove-token [token]
+(defn remove-invitation [token]
   (delete invitations
     (where (= :token token))))
 
