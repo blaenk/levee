@@ -41,7 +41,6 @@
      [secretary "1.2.1-20140627.190529-1"]
      [om "0.7.1"]
      [sablono "0.2.22"]
-     [prismatic/dommy "0.1.3"]
      [cljs-ajax "0.2.6"]
      [jayq "2.5.2"]]
   :source-paths ["src/clj"]
@@ -81,7 +80,8 @@
           [lein-cljsbuild "1.0.3"]
           [lein-figwheel "0.1.4-SNAPSHOT"]
           [lein-shell "0.4.0"]
-          [lein-ancient "0.5.5"]]
+          [lein-ancient "0.5.5"]
+          [jonase/eastwood "0.1.4"]]
        ;; :hooks [leiningen.cljsbuild]
        :dependencies
          [[org.clojure/tools.namespace "0.2.5"]
