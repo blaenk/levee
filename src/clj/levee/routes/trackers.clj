@@ -9,10 +9,10 @@
 (defroutes routes
   (context "/trackers" []
     (GET "/" req (friend/authenticated (handle-resource req (db/get-trackers))))
-    (POST "/" req (friend/authenticated (trackers/create-tracker req)))
+    (POST "/" req (friend/authorize #{:levee.auth/admin} (trackers/create-tracker req)))
 
     (context "/:id" [id]
-      (GET "/" req (friend/authenticated (trackers/edit-tracker-page id req)))
-      (PUT "/" req (friend/authenticated (trackers/edit-tracker id req)))
-      (DELETE "/" req (friend/authenticated (trackers/remove-tracker id req))))))
+      (GET "/" req (friend/authorize #{:levee.auth/admin} (trackers/edit-tracker-page id req)))
+      (PUT "/" req (friend/authorize #{:levee.auth/admin} (trackers/edit-tracker id req)))
+      (DELETE "/" req (friend/authorize #{:levee.auth/admin} (trackers/remove-tracker id req))))))
 
