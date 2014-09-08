@@ -211,7 +211,7 @@
                    (om/transact! props #(update-in % [:uploading] not)))}
                "upload"]]
              [:li (common/app-link "/trackers" "trackers")]
-             (when (common/admin? (:user props))
+             (when (common/admin? (:current-user props))
                [:li (common/app-link "/users" "users")])
              ]
             [:ul.nav.navbar-nav.navbar-right
