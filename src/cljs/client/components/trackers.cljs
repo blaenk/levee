@@ -31,13 +31,13 @@
           [:button.btn.btn-warning.clipboard
            {:type "button" :data-clipboard-text password}
            (common/glyphicon "asterisk")]]
-         (when (common/is-admin (:current-user props))
+         (when (common/admin? (:current-user props))
            [:td.text-center
             (common/app-link
               {:class "btn btn-primary"}
               (str "/trackers/" id) (common/glyphicon "edit"))
             ])
-         (when (common/is-admin (:current-user props))
+         (when (common/admin? (:current-user props))
            [:td.text-center
             [:button.btn.btn-danger
              {:type "button"
@@ -84,8 +84,8 @@
             [:th "Category"]
             [:th.text-center "User"]
             [:th.text-center "Pass"]
-            (when (common/is-admin current-user) [:th])
-            (when (common/is-admin current-user) [:th])]]
+            (when (common/admin? current-user) [:th])
+            (when (common/admin? current-user) [:th])]]
           [:tbody
            (map #(om/build tracker-component {:trackers trackers :tracker % :current-user current-user}) trackers)]]
          [:form {:role "form"}

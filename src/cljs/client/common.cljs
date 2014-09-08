@@ -118,7 +118,7 @@
 (defelem fontawesome [icon]
   [:i.fa {:class (str "fa-" icon)}])
 
-(defn is-admin [user]
+(defn admin? [user]
   (get (set (:roles user)) "levee.auth/admin"))
 
 (defn form-input [placeholder value on-change]
@@ -126,7 +126,6 @@
    [:div.input-group.col-sm-12
     [:input.form-control
      {:type "text"
-      :class "form-control"
       :placeholder placeholder
       :on-change on-change
       :value value}]]])

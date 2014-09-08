@@ -382,7 +382,7 @@
 
                 (command-button {:class "btn-danger"} "erase" (common/glyphicon "remove")
                   (fn [e]
-                    (if (or (common/is-admin @current-user)
+                    (if (or (common/admin? @current-user)
                             (and (= uploader username) (empty? @locks)))
                       (when (js/confirm "are you sure you want to delete this?")
                         (do
