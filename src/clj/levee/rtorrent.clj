@@ -35,14 +35,16 @@
 (def endpoint
   (str "scgi://" (env :rtorrent)))
 
-(defn call [& args]
+(defn call
   "helper function for calling rtorrent with predefined endpoint"
+  [& args]
   (if (= (.getScheme (URI. endpoint)) "scgi")
     (apply scgi/call endpoint args)
     (apply xml-rpc/call endpoint args)))
 
-(defn- multicall-spec [call]
+(defn- multicall-spec
   "construct a multicall call specification"
+  [call]
   (if-not (sequential? call)
     {:methodName (name call)}
     (let [[method & args] call
@@ -51,8 +53,9 @@
         {:methodName method-name :params args}
         {:methodName method-name}))))
 
-(defn multicall [& calls]
+(defn multicall
   "perform a multicall"
+  [& calls]
   (call :system.multicall (map multicall-spec calls)))
 
 (defn- format-calls [calls prefix multicall]
@@ -142,15 +145,17 @@
 ;; can also do view.persistent
 ;;   view.persistent "" v
 
-(defn load-magnet [uri start? & commands]
+(defn load-magnet
   "loads a magnet uri"
+  [uri start? & commands]
   (let [method (if start? "load_start" "load")]
     (if commands
       (apply call method uri commands)
       (call method uri))))
 
-(defn load-torrent [file start? & commands]
+(defn load-torrent
   "loads a torrent file"
+  [file start? & commands]
   (let [contents (IOUtils/toByteArray (io/input-stream file))
         metadata (parse-metainfo contents)
         infohash (torrent-info-hash-str metadata)
@@ -159,8 +164,9 @@
       (apply call method contents commands)
       (call method contents))))
 
-(defn set-file-priorities [hash priorities]
+(defn set-file-priorities
   "apply a map of file indices to priorities"
+  [hash priorities]
   (let [name->priority {:off 0, :normal 1, :high 2}
         priority-calls (map (fn [[k v]]
                               [:f.set_priority (str hash ":f" k) (name->priority v)])
@@ -168,13 +174,15 @@
         request (concat priority-calls [[:d.update_priorities hash]])]
     (apply multicall request)))
 
-(defn set-custom [hash key value]
+(defn set-custom
   "set a custom key-value pair for a torrent
    the value is base64 encoded to avoid escaping issues"
+  [hash key value]
   (call :d.custom.set hash key (base64-encode value)))
 
-(defn get-custom [hash key]
+(defn get-custom
   "get a custom key-value pair for a torrent
-  the value is base64 encoded to avoid escaping issues"
+   the value is base64 encoded to avoid escaping issues"
+  [hash key]
   (base64-decode (call :d.custom hash key)))
 

@@ -5,8 +5,9 @@
             [me.raynes.fs :refer [base-name]]
             [ring.util.response :as response]))
 
-(defn- get-progress [size completed]
+(defn- get-progress
   "calculate the percentage of a torrent"
+  [size completed]
   (if-not (= size 0)
     (* (/ (Long/parseLong completed) (Double/parseDouble size)) 100)
     0))
@@ -14,9 +15,10 @@
 (defn- get-ratio [ratio]
   (/ (Long/parseLong ratio) 1000.0))
 
-(defn- get-state [hashing open active complete]
+(defn- get-state
   "determine a torrent's human-friendly state
    given a variety of rtorrent state values"
+  [hashing open active complete]
   (if (= hashing "1")
     "hashing"
     (if-not (= open "1")
