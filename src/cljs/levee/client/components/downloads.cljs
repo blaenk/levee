@@ -19,9 +19,11 @@
 
 (defn- is-expiring [_ download]
   (let [d (-> download :date-added js/Date.)
-        current (.getDate d)]
+        current (.getDate d)
+        now (js/Date.)]
     ;; 2 weeks - 1 day to give 1 day notice
-    (and (> (.getTime (js/Date.)) (.getTime (.setDate d (+ current (- 14 1)))))
+    (.setDate d (+ current (- 14 1)))
+    (and (> (.getTime now) (.getTime d))
          (empty? (:locks download)))))
 
 (defn- is-mine [user download]

@@ -215,7 +215,9 @@
                [:li (common/app-link "/users" "users")])
              ]
             [:ul.nav.navbar-nav.navbar-right
-             [:li  (html/link-to "/logout" "logout")]]]]]
+             [:li  (html/link-to
+                     {:title (str "logged in as " (get-in props [:current-user :username]))}
+                     "/logout" "logout")]]]]]
 
          (om/build upload/upload-component props
            {:init-state {:app-chan chan}})
