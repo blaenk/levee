@@ -1,14 +1,11 @@
 (ns levee.client.core
   (:require
-    [cljs.core.async :refer [put! chan <!]]
     [om.core :as om :include-macros true]
-    [om.dom :as dom :include-macros true]
+    [cljs.core.async :refer [chan <!]]
     [secretary.core :as secretary :include-macros true :refer [defroute]]
-    [sablono.core :as html :refer-macros [html defelem defhtml]]
+    [sablono.core :as html :refer-macros [html]]
     [goog.events :as events]
     [goog.history.EventType :as EventType]
-    [dommy.utils :as utils]
-    [dommy.core :as dommy]
 
     [levee.client.common :as common]
 
@@ -18,11 +15,10 @@
     [levee.client.components.downloads :as downloads]
     [levee.client.components.download :as download]
 
-    [jayq.core :refer [$ on off ajax]])
+    [jayq.core :refer [$]])
   (:require-macros
     [cljs.core.async.macros :refer [go-loop]]
-    [jayq.macros :refer [ready]]
-    [dommy.macros :refer [sel sel1 node]]))
+    [jayq.macros :refer [ready]]))
 
 (defn try-localstorage [key default]
   (or (.getItem js/localStorage key) default))

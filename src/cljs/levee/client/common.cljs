@@ -1,18 +1,9 @@
 (ns levee.client.common
   (:require
-    [cljs.core.async :refer [put! chan <!]]
-    [om.core :as om :include-macros true]
-    [om.dom :as dom :include-macros true]
-    [secretary.core :as secretary :include-macros true :refer [defroute]]
-    [sablono.core :as html :refer-macros [html defelem defhtml]]
+    [sablono.core :as html :refer-macros [html defelem]]
     [goog.events :as events]
     [goog.history.EventType :as EventType]
-    [dommy.utils :as utils]
-    [dommy.core :as dommy]
     [jayq.core :refer [ajax]])
-  (:require-macros
-    [cljs.core.async.macros :refer [go]]
-    [dommy.macros :refer [sel sel1 node]])
   (:import goog.history.Html5History))
 
 (def history

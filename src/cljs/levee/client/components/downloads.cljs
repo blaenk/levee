@@ -2,17 +2,10 @@
   (:require
     [cljs.core.async :refer [put! chan <!]]
     [om.core :as om :include-macros true]
-    [om.dom :as dom :include-macros true]
-    [secretary.core :as secretary :include-macros true :refer [defroute]]
-    [sablono.core :as html :refer-macros [html defelem defhtml]]
-    [goog.events :as events]
-    [goog.history.EventType :as EventType]
-    [dommy.utils :as utils]
-    [dommy.core :as dommy]
+    [sablono.core :as html :refer-macros [html]]
     [levee.client.common :as common])
   (:require-macros
-    [cljs.core.async.macros :refer [go]]
-    [dommy.macros :refer [sel sel1 node]]))
+    [cljs.core.async.macros :refer [go]]))
 
 (defn is-locked [user download]
   ((set (:locks download)) (:username user)))

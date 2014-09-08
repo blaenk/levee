@@ -2,14 +2,9 @@
   (:require
     [cljs.core.async :refer [put! chan <! mult tap close! untap]]
     [om.core :as om :include-macros true]
-    [om.dom :as dom :include-macros true]
-    [secretary.core :as secretary :include-macros true :refer [defroute]]
-    [sablono.core :as html :refer-macros [html defelem defhtml]]
-    [goog.events :as events]
-    [goog.history.EventType :as EventType]
+    [sablono.core :as html :refer-macros [html]]
     [levee.client.common :as common]
-    [clojure.data :refer [diff]]
-    [jayq.core :refer [$ on off ajax]])
+    [jayq.core :refer [$ on off]])
   (:require-macros
     [cljs.core.async.macros :refer [go-loop]]))
 
