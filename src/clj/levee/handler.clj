@@ -32,7 +32,6 @@
     [levee.routes [downloads :as downloads]
                   [trackers :as trackers]
                   [users :as users]
-                  [invitations :as invitations]
                   [common :refer [handle-resource]]]))
 
 (defn hot-reload [handler]
@@ -47,9 +46,19 @@
   (routes
     users/routes
     downloads/routes
-    invitations/routes
     trackers/routes
     base-routes))
+
+(defn- unauthorized-handler [req]
+  (if (= (get-in req [:params :accept]) "json")
+    (response/response {:error "you're unauthorized"})
+    {:status 403
+     :body (layout/external [:div "you're unauthorized"])}))
+
+(defn- unauthenticated-handler [req]
+  (if (= (get-in req [:params :accept]) "json")
+    (response/response {:error "you're unauthenticated"})
+    (friend/default-unauthenticated-handler req)))
 
 ;; request comes in from top-layer, needs to be processed
 ;; in preparation for next inner-layer
@@ -59,9 +68,9 @@
         {:credential-fn
           (partial creds/bcrypt-credential-fn db/get-user-by-name)
          :workflows [(workflows/interactive-form)]
-         :allow-anon? true
-         :login-uri "/login"
-         :default-landing-uri "/downloads"})
+         :default-landing-uri "/"
+         :unauthenticated-handler #'unauthenticated-handler
+         :unauthorized-handler #'unauthorized-handler})
       (compojure.handler/site
         {:session
          ;; TODO: make this configurable of course
