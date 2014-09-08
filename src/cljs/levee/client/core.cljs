@@ -24,8 +24,6 @@
     [jayq.macros :refer [ready]]
     [dommy.macros :refer [sel sel1 node]]))
 
-(enable-console-print!)
-
 (defn try-localstorage [key default]
   (or (.getItem js/localStorage key) default))
 
@@ -57,14 +55,12 @@
 
 (common/api :get "/users/current"
   (fn [res]
-    (.log js/console res)
     (swap! app-state #(assoc % :current-user res))))
 
 (ready
   (goog.events/listen
     common/history EventType/NAVIGATE
     (fn [e]
-      (.log js/console (str "[LEVEE] navigated to " (.-token e)))
       (secretary/dispatch! (.-token e))))
 
   (.setEnabled common/history true)

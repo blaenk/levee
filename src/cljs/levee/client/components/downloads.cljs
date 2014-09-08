@@ -143,7 +143,6 @@
     ;; sub to ws feed
     om/IWillMount
     (will-mount [_]
-      (.log js/console "mounting downloads")
       (when (empty? downloads)
         (common/bootstrap-or-get "/downloads" #(om/update! downloads %)))
 
@@ -160,8 +159,7 @@
     ;; unsub from ws feed
     om/IWillUnmount
     (will-unmount [_]
-      (.close (om/get-state owner :websocket))
-      (.log js/console "unmounting downloads"))
+      (.close (om/get-state owner :websocket)))
 
     om/IRender
     (render [_]

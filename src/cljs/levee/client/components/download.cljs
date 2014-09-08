@@ -15,8 +15,6 @@
     [cljs.core.async.macros :refer [go-loop]]
     [dommy.macros :refer [sel sel1 node]]))
 
-(enable-console-print!)
-
 (defn- format-time [datetime how]
   (-> (.utc js/moment (js/Date. datetime))
       (.local)
@@ -229,9 +227,8 @@
           (common/api :post (str "/downloads/" (:hash download) "/files")
             {:priorities diff}
             (fn [m]
-              (if (:success m)
-                (om/set-state! owner :files-enabled diff)
-                (.log js/console "error?")))))))
+              (when (:success m)
+                (om/set-state! owner :files-enabled diff)))))))
 
     om/IWillMount
     (will-mount [_]
@@ -245,7 +242,6 @@
 
     om/IRenderState
     (render-state [_ {:keys [pattern chan]}]
-      (.log js/console "re-rendered")
       (let [regex (common/fuzzy-search pattern)
             filtered (filter #(.test regex (:path %)) files)
             file-count (count filtered)
@@ -287,7 +283,6 @@
     ;; sub to ws feed
     om/IWillMount
     (will-mount [_]
-      (.log js/console "mounting download")
       (if (and (empty? download) (not found))
         (common/bootstrap-or-get
           (str "/downloads/" hash)
@@ -308,8 +303,7 @@
     ;; unsub from ws feed
     om/IWillUnmount
     (will-unmount [_]
-      (.close (om/get-state owner :websocket))
-      (.log js/console "unmounting download"))
+      (.close (om/get-state owner :websocket)))
 
     om/IRenderState
     (render-state [_ {:keys [editing show-stats]}]
@@ -358,7 +352,6 @@
                       (common/api :post (str "/downloads/" hash "/lock-toggle")
                         {:username username}
                         (fn [m]
-                          (.log js/console m)
                           (om/update! download [:locks] m))))))
 
                 (command-button {:class "btn-info"} "edit files" (common/glyphicon "check")

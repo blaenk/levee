@@ -88,11 +88,9 @@
   (if-let [data (-> (.-levee_bootstrap js/window)
                     (js->clj :keywordize-keys true))]
     (do
-      (.log js/console "bootstrapped")
       (f data)
       (set! (.-levee_bootstrap js/window) nil))
     (do
-      (.log js/console "couldn't bootstrap; getting")
       (api :get endpoint f))))
 
 (defn fuzzy-search [search]
