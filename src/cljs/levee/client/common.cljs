@@ -128,3 +128,8 @@
       :on-change on-change
       :value value}]]])
 
+(defn websocket [endpoint]
+  (let [proto (if (= (.-protocol js/location) "https:") "wss" "ws")
+        host (.-host js/location)]
+    (js/WebSocket. (str proto "://" host endpoint))))
+
