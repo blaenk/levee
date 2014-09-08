@@ -8,14 +8,8 @@
     [levee.routes.common :refer [handle-resource]]
     [levee.models.users :as users]))
 
-(def login-form
-  [:form {:method "POST" :action "login"}
-   [:input {:type "text" :name "username"}]
-   [:input {:type "password" :name "password"}]
-   [:input {:type "submit" :value "login"}]])
-
 (defroutes routes
-  (GET "/login" req (layout/external login-form))
+  (GET "/login" req (layout/login))
   (GET "/logout" req (friend/logout* (response/redirect "/login")))
 
   (context "/invitations" []
@@ -24,7 +18,7 @@
 
     (context "/:token" [token]
       (DELETE "/" req (friend/authorize #{:levee.auth/admin} (users/remove-invitation token)))
-      (GET "/" req (layout/registration token))))
+      (GET "/" req (layout/register token))))
 
   (context "/users" []
     (GET "/" req (friend/authorize #{:levee.auth/admin} (handle-resource req (db/get-users))))

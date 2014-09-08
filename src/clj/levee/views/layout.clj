@@ -56,7 +56,7 @@
      (when (dev?)
        [:script (browser-connected-repl-js)])]))
 
-(defn external [body]
+(defn external [scope body]
   (html5
     [:head
      [:meta {:charset "utf-8"}]
@@ -68,37 +68,64 @@
        "/css/style.css")
      (google-fonts "Noto Sans" :sizes [400 700] :italics :all)]
     [:body
-     [:div#root.container body]]))
+     [:div#root.container
+      [:div.col-xs-12.col-sm-offset-3.col-sm-6.col-md-6.col-md-offset-3
+       [:div.navbar.navbar-default.navbar-static-top {:role "navigation"}
+        [:div.container
+         [:div.navbar-header
+          [:div.navbar-brand scope]]]]
 
-(defn registration [token]
-  (external
-    [:div.col-xs-12.col-sm-offset-3.col-sm-6.col-md-6.col-md-offset-3
-     [:div.navbar.navbar-default.navbar-static-top.external-nav {:role "navigation"}
-      [:div.container
-       [:div.navbar-header
-        [:p.navbar-text.external-scope "Registration"]]]]
+       body]]]))
 
-     [:form {:role "form" :action "/users" :method "post"}
-      [:div.form-group
-       [:div.input-group.col-xs-12
-        [:input.form-control
-         {:text "text"
-          :placeholder "username"
-          :name "username"}]]]
-      [:div.form-group
-       [:div.input-group.col-xs-12
-        [:input.form-control
-         {:text "text"
-          :placeholder "password"
-          :name "password"}]]]
-      [:div.form-group
-       [:div.input-group.col-xs-12
-        [:input.form-control
-         {:text "text"
-          :placeholder "email"
-          :name "email"}]]]
-      [:input {:type "hidden" :value token :name "token"}]
-      [:input.btn.btn-primary.pull-right
-       {:type "submit"
-        :value "create"}]
-      ]]))
+(def login-form
+  [:form {:method "POST" :action "login"}
+   [:input {:type "text" :name "username"}]
+   [:input {:type "password" :name "password"}]
+   [:input {:type "submit" :value "login"}]])
+
+(defn login []
+  (external "login"
+    [:form {:role "form" :action "/login" :method "post"}
+     [:div.form-group
+      [:div.input-group.col-xs-12
+       [:input.form-control
+        {:type "text"
+         :placeholder "username"
+         :name "username"}]]]
+     [:div.form-group
+      [:div.input-group.col-xs-12
+       [:input.form-control
+        {:type "password"
+         :placeholder "password"
+         :name "password"}]]]
+     [:input.btn.btn-primary.pull-right
+      {:type "submit"
+       :value "login"}]]))
+
+(defn register [token]
+  (external "register"
+    [:form {:role "form" :action "/users" :method "post"}
+     [:div.form-group
+      [:div.input-group.col-xs-12
+       [:input.form-control
+        {:type "text"
+         :placeholder "username"
+         :name "username"}]]]
+     [:div.form-group
+      [:div.input-group.col-xs-12
+       [:input.form-control
+        {:type "text"
+         :placeholder "password"
+         :name "password"}]]]
+     [:div.form-group
+      [:div.input-group.col-xs-12
+       [:input.form-control
+        {:type "text"
+         :placeholder "email"
+         :name "email"}]]]
+     [:input {:type "hidden" :value token :name "token"}]
+     [:input.btn.btn-primary.pull-right
+      {:type "submit"
+       :value "register"}]
+     ]))
+
