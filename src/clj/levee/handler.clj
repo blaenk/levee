@@ -53,7 +53,8 @@
   (if (= (get-in req [:params :accept]) "json")
     (response/response {:error "you're unauthorized"})
     {:status 403
-     :body (layout/external [:div "you're unauthorized"])}))
+     :body (layout/external "unauthorized"
+                            [:div.error-authorization "You don't have the proper authorization!"])}))
 
 (defn- unauthenticated-handler [req]
   (if (= (get-in req [:params :accept]) "json")

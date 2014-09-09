@@ -64,7 +64,13 @@
     (did-update [_ _ _]
       (doto (om/get-state owner :clipboard)
         (.unclip)
-        (.clip ($ "button.clipboard"))))
+        (.clip ($ "button.clipboard")))
+
+      (om/transact!
+        trackers
+        #(sort (fn [a b]
+                 (common/compare-ignore-case (:name a) (:name b)))
+               %)))
 
     om/IRender
     (render [_]

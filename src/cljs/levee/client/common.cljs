@@ -124,3 +124,6 @@
         host (.-host js/location)]
     (js/WebSocket. (str proto "://" host endpoint))))
 
+(defn compare-ignore-case [a b]
+  (.localeCompare (.toLowerCase a) (.toLowerCase b)))
+

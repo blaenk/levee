@@ -77,6 +77,15 @@
 
       (common/api :get "/invitations" #(om/update! invitations %)))
 
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (.log js/console users)
+      (om/transact!
+        users
+        #(sort (fn [a b]
+                 (common/compare-ignore-case (:username a) (:username b)))
+               %)))
+
     om/IRender
     (render [_]
       (html

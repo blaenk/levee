@@ -29,7 +29,7 @@
    "expiring" is-expiring})
 
 (defn- sort-by-name [a b]
-  (.localeCompare (-> a :name .toLowerCase) (-> b :name .toLowerCase)))
+  (common/compare-ignore-case (:name a) (:name b)))
 
 (defn- sort-by-recent [a b]
   (- (- (-> a :date-added js/Date. .getTime) (-> b :date-added js/Date. .getTime))))
