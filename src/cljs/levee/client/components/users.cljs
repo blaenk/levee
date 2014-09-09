@@ -84,7 +84,6 @@
 
     om/IDidUpdate
     (did-update [_ _ _]
-      (.log js/console users)
       (om/transact!
         users
         #(sort (fn [a b]

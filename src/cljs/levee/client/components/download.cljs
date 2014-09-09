@@ -289,7 +289,6 @@
 
       (set! (.-onmessage (om/get-state owner :websocket))
         (fn [msg]
-              (.log js/console (.-data msg))
           (let [json (.parse js/JSON (.-data msg))
                 clj (js->clj json :keywordize-keys true)]
             (om/update! download clj)))))
