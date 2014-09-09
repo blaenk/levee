@@ -129,3 +129,20 @@
        :value "register"}]
      ]))
 
+(defn reset-password [user id token]
+  (external "reset password"
+    [:form {:role "form" :action (str "/users/" id "/reset/" token) :method "post"}
+     [:p (str "Change the password for " user)]
+     [:div.form-group
+      [:div.input-group.col-xs-12
+       [:input.form-control
+        {:type "text"
+         :placeholder "password"
+         :name "password"}]]]
+     [:input {:type "hidden" :value id :name "id"}]
+     [:input {:type "hidden" :value token :name "token"}]
+     [:input.btn.btn-primary.pull-right
+      {:type "submit"
+       :value "reset"}]
+     ]))
+

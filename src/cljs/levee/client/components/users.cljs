@@ -5,10 +5,10 @@
     [levee.client.common :as common]))
 
 (defn edit-user [{users :users
-                     found :found
-                     user-id :user-id
-                     {:keys [id email username roles]
-                      :as user} :user} owner]
+                  found :found
+                  user-id :user-id
+                  {:keys [id email username roles token]
+                   :as user} :user} owner]
   (reify
     om/IWillMount
     (will-mount [_]
@@ -25,6 +25,11 @@
            (common/form-input "username" username (handler :username))
            (common/form-input "email" email (handler :email))
            (common/form-input "roles" roles (handler :roles))
+           (common/form-input "token" token (handler :token))
+           [:p "password reset link: "
+            (html/link-to
+              (str "/users/" id "/reset/" token)
+              (str "/users/" id "/reset/" token))]
            [:div.form-group
             [:div.input-group.col-sm-12
              (common/app-link

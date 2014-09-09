@@ -36,13 +36,15 @@
   (db/remove-user id)
   (response/response (db/get-users)))
 
-(defn create-user [req]
-  (let [user (select-keys (:params req) [:username :password :email :token])
-        user (assoc user :roles "member")
-        user (update-in user [:password] creds/hash-bcrypt)
-        ident (dissoc user :password :token)
-        ident (clojure.set/rename-keys ident {:username :identity})
-        ident (update-in ident [:roles] #(set [(keyword "levee.auth" %)]))]
+(defn create-user [{:keys [params]}]
+  (let [user {:username (:username params)
+              :password (creds/hash-bcrypt (:password params))
+              :email (:email params)
+              :token (:token params)
+              :roles "member"}
+
+        ident {:identity (:username params)
+               :roles #{:levee.auth/member}}]
     (if (empty? (db/get-invitation-by-token (:token user)))
       (response/response {:error "non-existent token"})
       (do
@@ -59,4 +61,18 @@
 (defn remove-invitation [token]
   (db/remove-invitation token)
   (response/response (db/get-invitations)))
+
+(defn reset-password [id token req]
+  (let [user (db/get-user-by-id-and-token id token)
+        pw (get-in req [:params :password])
+        encrypted (creds/hash-bcrypt pw)
+        new-token (sha1 (bytes 64))]
+    (if-not (nil? user)
+      (do
+        (db/update-user id {:password encrypted :token new-token})
+        (friend/merge-authentication
+          (response/redirect "/")
+          {:identity (:username user)
+           :roles #{(keyword "levee.auth" (:roles user))}}))
+      (response/redirect (get-in req [:headers "referer"])))))
 

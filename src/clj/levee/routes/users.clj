@@ -17,11 +17,13 @@
     (POST "/" req (friend/authorize #{:levee.auth/admin} (users/create-invitation)))
 
     (context "/:token" [token]
-      (DELETE "/" req (friend/authorize #{:levee.auth/admin} (users/remove-invitation token)))
+      (DELETE "/" req (friend/authorize #{:levee.auth/admin}
+                                        (users/remove-invitation token)))
       (GET "/" req (layout/register token))))
 
   (context "/users" []
-    (GET "/" req (friend/authorize #{:levee.auth/admin} (handle-resource req (db/get-users))))
+    (GET "/" req (friend/authorize #{:levee.auth/admin}
+                                   (handle-resource req (db/get-users))))
     (POST "/" req (users/create-user req))
 
     (GET "/current" req (friend/authenticated
@@ -30,5 +32,9 @@
     (context "/:id" [id]
       (GET "/" req (friend/authorize #{:levee.auth/admin} (users/edit-user-page id req)))
       (PUT "/" req (friend/authorize #{:levee.auth/admin} (users/edit-user id req)))
-      (DELETE "/" req (friend/authorize #{:levee.auth/admin} (users/remove-user id req))))))
+      (DELETE "/" req (friend/authorize #{:levee.auth/admin} (users/remove-user id req)))
+
+      (context "/reset/:token" [token]
+        (GET "/" [] (layout/reset-password (:username (db/get-user-by-id id)) id token))
+        (POST "/" req (users/reset-password id token req))))))
 

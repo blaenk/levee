@@ -12,16 +12,16 @@
 
 (defn get-users []
   (select users
-    (fields :id :email :username :roles)
+    (fields :id :email :username :roles :token)
     (order :username)))
 
 (defn insert-user [user]
-  (let [filtered-map (select-keys user [:email :username :password :token :roles])]
+  (let [filtered-map (select-keys user [:username :password :email :token :roles])]
     (insert users
       (values filtered-map))))
 
 (defn update-user [id user]
-  (let [filtered-map (select-keys user [:username :email :roles])]
+  (let [filtered-map (select-keys user [:username :password :email :roles :token])]
     (update users
       (set-fields filtered-map)
       (where (= :id id)))))
@@ -54,10 +54,10 @@
           (first)
           (update-in [:roles] #(set [(keyword "levee.auth" %)]))))
 
-(defn get-user-by-token [token]
+(defn get-user-by-id-and-token [id token]
   (-> (select users
         (fields :id :username :roles :email)
-        (where (= :token token))
+        (where (and (= :id id) (= :token token)))
         (limit 1))
       (first)))
 
