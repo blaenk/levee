@@ -50,7 +50,7 @@
       (do
         (db/insert-user user)
         (db/remove-invitation (:token user))
-        (friend/merge-authentication (response/redirect "/") ident)))))
+        (friend/merge-authentication (response/redirect-after-post "/") ident)))))
 
 (defn create-invitation []
   (let [invitation {:token (sha1 (bytes 64))
@@ -71,8 +71,8 @@
       (do
         (db/update-user id {:password encrypted :token new-token})
         (friend/merge-authentication
-          (response/redirect "/")
+          (response/redirect-after-post "/")
           {:identity (:username user)
            :roles #{(keyword "levee.auth" (:roles user))}}))
-      (response/redirect (get-in req [:headers "referer"])))))
+      (response/redirect-after-post (get-in req [:headers "referer"])))))
 
