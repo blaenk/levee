@@ -54,12 +54,16 @@
     (response/response {:error "you're unauthorized"})
     {:status 403
      :body (layout/external "unauthorized"
-                            [:div.error-authorization "You don't have the proper authorization!"])}))
+                            [:div.error-authorization
+                             "You don't have the proper authorization!"])}))
 
 (defn- unauthenticated-handler [req]
   (if (= (get-in req [:params :accept]) "json")
     (response/response {:error "you're unauthenticated"})
     (friend/default-unauthenticated-handler req)))
+
+(defn- login-failure-handler [req]
+  (response/redirect-after-post (get-in req [:headers "referer"])))
 
 ;; request comes in from top-layer, needs to be processed
 ;; in preparation for next inner-layer
@@ -68,13 +72,13 @@
       (friend/authenticate
         {:credential-fn
           (partial creds/bcrypt-credential-fn db/get-user-by-name)
-         :workflows [(workflows/interactive-form)]
+         :workflows [(workflows/interactive-form
+                       :login-failure-handler #'login-failure-handler)]
          :default-landing-uri "/"
          :unauthenticated-handler #'unauthenticated-handler
          :unauthorized-handler #'unauthorized-handler})
       (compojure.handler/site
         {:session
-         ;; TODO: make this configurable of course
          {:store (cookie-store {:key (env :secret)})
           :cookie-name "levee-session"
           :cookie-attrs
