@@ -7,9 +7,9 @@
 
 (defn- get-progress
   "calculate the percentage of a torrent"
-  [size completed]
+  [completed size]
   (if-not (= size 0)
-    (* (/ (Long/parseLong completed) (Double/parseDouble size)) 100)
+   (* (/ (Long/parseLong completed) (Double/parseDouble size)) 100)
     0))
 
 (defn- get-ratio [ratio]
@@ -30,8 +30,8 @@
           "seeding")))))
 
 (defn- construct-download [{:keys [hash_checking? open? active? multi_file?
-                                   complete completed_chunks
-                                   size_chunks hash name directory
+                                   complete completed_bytes
+                                   size_bytes hash name directory
                                    ratio message peers_accounted peers_complete
                                    up_rate down_rate up_total
                                    levee-uploader levee-locks
@@ -40,25 +40,27 @@
    :state (get-state hash_checking? open? active? complete)
    :ratio (format "%.2f" (get-ratio ratio))
    :message message
-   :progress (format "%.0f" (get-progress size_chunks completed_chunks))
+   :completed_bytes (Long/parseLong completed_bytes)
+   :size_bytes (Long/parseLong size_bytes)
+   :progress (format "%.0f" (get-progress completed_bytes size_bytes))
    :hash (clojure.string/lower-case hash)
    :uploader (base64-decode levee-uploader)
    :date-added (base64-decode levee-date-added)
    :locks (cheshire.core/parse-string (base64-decode levee-locks))
    :directory (base-name directory)
    :multi_file? (= multi_file? "1")
-   :leeches peers_accounted
-   :seeders peers_complete
-   :up_rate up_rate
-   :down_rate down_rate
-   :total_uploaded up_total})
+   :leeches (Long/parseLong peers_accounted)
+   :seeders (Long/parseLong peers_complete)
+   :up_rate (Long/parseLong up_rate)
+   :down_rate (Long/parseLong down_rate)
+   :total_uploaded (Long/parseLong up_total)})
 
 (defn- construct-file [{:keys [size_bytes completed_chunks size_chunks
                                priority path path_components]}]
   {:path path
    :path_components path_components
-   :size size_bytes
-   :progress (format "%.0f" (get-progress size_chunks completed_chunks))
+   :size (Long/parseLong size_bytes)
+   :progress (format "%.0f" (get-progress completed_chunks size_chunks))
    :enabled (not= priority "0")})
 
 (defn get-downloads []
@@ -66,16 +68,15 @@
                     :get_name
                     :get_hash
                     :get_directory
+                    :get_complete
                     :get_ratio
                     :get_message
-                    :get_complete
                     :is_multi_file
                     :is_hash_checking
                     :is_active
                     :is_open
                     :get_size_bytes
-                    :get_size_chunks
-                    :get_completed_chunks
+                    :get_completed_bytes
                     :get_peers_accounted
                     :get_peers_complete
                     :get_up_rate
@@ -101,8 +102,8 @@
 (defn get-download [hash]
   (let [download (rtorrent/torrent hash
                    :get_name
-                   :get_directory
                    :get_hash
+                   :get_directory
                    :get_complete
                    :get_ratio
                    :get_message
@@ -111,8 +112,7 @@
                    :is_active
                    :is_open
                    :get_size_bytes
-                   :get_size_chunks
-                   :get_completed_chunks
+                   :get_completed_bytes
                    :get_peers_accounted
                    :get_peers_complete
                    :get_up_rate
@@ -123,8 +123,7 @@
                    [:get_custom "levee-date-added"])
         download (construct-download download)
         files (get-files hash)]
-    (assoc download :files files))
-  )
+    (assoc download :files files)))
 
 ;; extracting (?):
 ;;   path

@@ -257,6 +257,32 @@
                :editing editing}
               {:init-state {:root? true}})]])))))
 
+(defn- format-component [component pre label post]
+  (when-not (= component 0)
+    (str
+      component
+      pre
+      (if (> component 1)
+        (str label "s")
+        label)
+      post)))
+
+(defn- eta [downloaded total down_rate]
+  (let [remaining-bytes 2352314124
+        down_rate 513] ; (- total downloaded)]
+    (cond
+      (= remaining-bytes 0) "done"
+      (= down_rate 0) "not downloading"
+      :else (let [remaining-seconds (/ remaining-bytes down_rate)
+                  duration (.duration js/moment remaining-seconds "seconds")]
+              (str
+                (format-component (.years duration)   " " "year"   ", ")
+                (format-component (.months duration)  " " "month"  ", ")
+                (format-component (.days duration)    " " "day"    ", ")
+                (format-component (.hours duration)   " " "hour"   ", ")
+                (format-component (.minutes duration) " " "minute" ", ")
+                (format-component (.seconds duration) " " "second" ""))))))
+
 (defn download-page [{:keys [download found hash file-settings downloads current-user]
                       :as props} owner]
   (reify
@@ -303,7 +329,8 @@
       (let [{:keys [name hash state ratio message
                     progress uploader date-added
                     locks files total_uploaded
-                    up_rate down_rate seeders leeches]} download
+                    up_rate down_rate seeders leeches
+                    completed_bytes size_bytes]} download
             username (:username current-user)]
         (html
           (common/spinner-when (empty? download)
@@ -317,14 +344,15 @@
                 :data-original-title state
                 :data-placement "top"}
                [:div.download-progress-inner
-                {:class (str "download-state-" (:state download))
-                 :style {:width (str (:progress download) "%")}
-                 :aria-valuenow (:progress download)}]]
+                {:class (str "download-state-" state)
+                 :style {:width (str progress "%")}
+                 :aria-valuenow progress}]]
 
               [:div.download-meta
                [:div.download-added
                 "added by " [:strong.download-uploader uploader] " on "
-                [:time.download-date-added {:title (format-time date-added :long)}
+                [:time.download-date-added
+                 {:title (format-time date-added :long)}
                  (format-time date-added :short)]
                 (if (empty? locks)
                   [:span.download-expires-at
@@ -386,8 +414,12 @@
 
              (when show-stats
                [:div.download-stats
+                (when (= state "downloading")
+                  [:div.ratio [:strong "ETA: "]
+                   (eta completed_bytes size_bytes down_rate)])
                 [:div.ratio [:strong "Ratio: "] ratio]
-                [:div.ratio [:strong "Total Uploaded: "] (common/filesize total_uploaded)]
+                [:div.ratio [:strong "Total Uploaded: "]
+                 (common/filesize total_uploaded)]
                 [:div.ratio [:strong "Up Rate: "] up_rate]
                 [:div.ratio [:strong "Down Rate: "] down_rate]
                 [:div.ratio [:strong "seeders: "] seeders]
