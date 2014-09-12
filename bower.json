@@ -20,6 +20,6 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap-less": "~3.2.0"
+    "bootstrap": "~3.2.0"
   }
 }
