@@ -22,11 +22,15 @@
 (defn- is-mine [user download]
   (= (:uploader download) (:username user)))
 
+(defn- is-system [_ download]
+  (= (:uploader download) "system"))
+
 (def ^:private scopes
   {"all" (constantly true)
    "mine" is-mine
    "locked" is-locked
-   "expiring" is-expiring})
+   "expiring" is-expiring
+   "system" is-system})
 
 (defn- sort-by-name [a b]
   (common/compare-ignore-case (:name a) (:name b)))
@@ -94,6 +98,7 @@
             [:li {:role "presentation" :class "dropdown-header"} "Search Scope"]
             (search-link search :scope "all")
             (search-link search :scope "mine")
+            (search-link search :scope "system")
             (search-link search :scope "locked")
             (search-link search :scope "expiring")]]
 
