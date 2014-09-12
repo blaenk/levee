@@ -29,11 +29,13 @@
 
 (defn prune []
   (while true
-    (let [expired (expired-torrents)]
+    (let [expired (expired-torrents)
+          expired-count (count expired)]
       (apply rtorrent/multicall
         (for [t expired]
           [:d.erase (:hash t)]))
-      (log/info "pruned" (count expired) "torrents"))
+      (when (> expired-count 0)
+        (log/info "pruned" expired-count "torrents")))
     (Thread/sleep
       (-> (interval (now) (-> 10 minutes from-now)) in-millis))))
 
