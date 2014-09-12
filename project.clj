@@ -43,7 +43,6 @@
      [sablono "0.2.22"]
      [cljs-ajax "0.2.6"]
      [jayq "2.5.2"]]
-  :plugins [[com.cemerick/austin "0.1.5"]]
   :source-paths ["src/clj"]
   :main levee.main
   :jvm-opts ["-Xmx1g"]
@@ -76,7 +75,8 @@
             ["cljsbuild" "once" "prod"]
             ["uberjar"]]}
        :plugins
-         [[lein-environ "1.0.0"]
+         [[com.cemerick/austin "0.1.5"]
+          [lein-environ "1.0.0"]
           [lein-cljsbuild "1.0.3"]
           [lein-figwheel "0.1.4-SNAPSHOT"]
           [lein-shell "0.4.0"]
