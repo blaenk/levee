@@ -43,8 +43,9 @@
           (send! chan d)
           (recur downloading?))))))
 
-(defn sendfile [file]
+(defn sendfile
   "constructs an X-Accel-Redirect (sendfile) request for nginx"
+  [file]
   (let [sendfile-path (.getPath (fs/file "/sendfile" file))
         base-name (fs/base-name file)]
     {:status 200
