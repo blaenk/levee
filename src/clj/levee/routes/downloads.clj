@@ -44,8 +44,9 @@
           (recur downloading?))))))
 
 (defn sendfile [file]
-  (let [base-name (fs/base-name file)
-        sendfile-path (.getPath (fs/file "/sendfile" file))]
+  "constructs an X-Accel-Redirect (sendfile) request for nginx"
+  (let [sendfile-path (.getPath (fs/file "/sendfile" file))
+        base-name (fs/base-name file)]
     {:status 200
      :headers
        {"Content-Disposition" (str "filename=\"" base-name "\"")
@@ -65,8 +66,11 @@
 
     (context "/:hash" [hash]
       (GET "/" req (friend/authenticated (handle-resource req (downloads/get-download hash))))
+
       (GET "/files" req (friend/authenticated (response/response (downloads/get-files hash))))
       (POST "/files" req (friend/authenticated (downloads/commit-file-priorities req)))
+
+      (GET "/extracted" req (friend/authenticated (response/response (downloads/get-extracted hash))))
 
       (GET "/ws" req (friend/authenticated (download-ws-feed hash req)))
 

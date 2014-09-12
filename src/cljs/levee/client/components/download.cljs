@@ -114,7 +114,7 @@
     (render [_]
       (let [finished? (= (js/parseInt (:progress file)) 100)
             disabled? (not (:enabled file))
-            file_name (last (:path_components file))
+            file_name (:name file)
             disabled-tooltip (if disabled?
                                {:data-toggle "tooltip"
                                 :data-placement "top"
@@ -132,7 +132,7 @@
              [:span.file-name file_name]
              (html/link-to {:class "file-name"}
                (if (:multi_file? download)
-                 (str "/file/" (:directory download) "/" (:path file))
+                 (str "/file/" (:name download) "/" (:path file))
                  (str "/file/" (:path file)))
                file_name))
 
@@ -185,7 +185,7 @@
            [:div.entities
             (map #(om/build file-view {:file % :download download :editing editing}
                             {:react-key (get-in % [:id])})
-                 (sort-by (comp last :path_components) files))
+                 (sort-by :name files))
             (map #(om/build folder-view
                             {:folder %
                              :download download
@@ -193,7 +193,7 @@
                              :collapsed? (:collapsed file-settings)
                              :editing editing}
                             {:react-key (first %)})
-                 (sort-by first folders))])]))))
+                 (sort #(common/compare-ignore-case (first %1) (first %2)) folders))])]))))
 
 (defn detect-enabled-changes [original prs]
   (second
@@ -237,16 +237,30 @@
     (render-state [_ {:keys [pattern chan]}]
       (let [regex (common/fuzzy-search pattern)
             filtered (filter #(.test regex (:path %)) files)
-            file-count (count filtered)
-            root (file-tree filtered)]
+            root (file-tree filtered)
+
+            filtered-extracted (filter #(.test regex (:path %)) (:extracted-files download))
+            extracted-files-root (file-tree filtered-extracted)
+            file-count (+ (count filtered) (count filtered-extracted))]
         (html
           [:div.files-section
-           (when (> (count files) 1)
+           (when (> file-count 1)
              (om/build file-search-view
                {:file-count file-count
                 :file-settings file-settings
-                :is-tree (contains? (second root) :folders)}
+                :is-tree (or
+                           (contains? (second root) :folders)
+                           (contains? (second extracted-files-root) :folders))}
                {:init-state {:chan chan}}))
+
+           [:div.files
+            (om/build folder-view
+              {:folder extracted-files-root
+               :download download
+               :file-settings file-settings
+               :collapsed? (:collapsed file-settings)
+               :editing false}
+              {:init-state {:root? true}})]
 
            [:div.files
             (om/build folder-view
@@ -268,8 +282,7 @@
       post)))
 
 (defn- eta [downloaded total down_rate]
-  (let [remaining-bytes 2352314124
-        down_rate 513] ; (- total downloaded)]
+  (let [remaining-bytes (- total downloaded)]
     (cond
       (= remaining-bytes 0) "done"
       (= down_rate 0) "not downloading"
@@ -307,8 +320,12 @@
           (str "/downloads/" hash)
           #(om/update! download %))
 
-        (common/api :get (str "/downloads/" hash "/files")
-          #(om/update! download [:files] %)))
+        (do
+          (common/api :get (str "/downloads/" hash "/files")
+            #(om/update! download [:files] %))
+
+          (common/api :get (str "/downloads/" hash "/extracted")
+            #(om/update! download [:extracted-files] %))))
 
       (om/set-state! owner :websocket
         (common/websocket (str "/downloads/" hash "/ws")))

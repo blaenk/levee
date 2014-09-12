@@ -2,7 +2,7 @@
   (:require [levee.rtorrent :as rtorrent]
             [levee.common :refer [base64-encode base64-decode]]
             [levee.models.users :as users]
-            [me.raynes.fs :refer [base-name]]
+            [me.raynes.fs :as fs]
             [ring.util.response :as response]))
 
 (defn- get-progress
@@ -31,7 +31,7 @@
 
 (defn- construct-download [{:keys [hash_checking? open? active? multi_file?
                                    complete completed_bytes
-                                   size_bytes hash name directory
+                                   size_bytes hash name
                                    ratio message peers_accounted peers_complete
                                    up_rate down_rate up_total
                                    levee-uploader levee-locks
@@ -47,7 +47,6 @@
    :uploader (base64-decode levee-uploader)
    :date-added (base64-decode levee-date-added)
    :locks (cheshire.core/parse-string (base64-decode levee-locks))
-   :directory (base-name directory)
    :multi_file? (= multi_file? "1")
    :leeches (Long/parseLong peers_accounted)
    :seeders (Long/parseLong peers_complete)
@@ -59,15 +58,16 @@
                                priority path path_components]}]
   {:path path
    :path_components path_components
+   :name (last path_components)
    :size (Long/parseLong size_bytes)
    :progress (format "%.0f" (get-progress completed_chunks size_chunks))
-   :enabled (not= priority "0")})
+   :enabled (not= priority "0")
+   :extracted false})
 
 (defn get-downloads []
   (let [downloads (rtorrent/torrents "main"
                     :get_name
                     :get_hash
-                    :get_directory
                     :get_complete
                     :get_ratio
                     :get_message
@@ -97,13 +97,34 @@
                  :get_size_chunks
                  :get_size_bytes)))
 
+(defn get-extracted [hash]
+  (let [[[basepath] [name] [multi_file?]] (rtorrent/multicall
+                                      [:get_directory]
+                                      [:d.get_name hash]
+                                      [:d.is_multi_file hash])
+        directory (fs/file basepath name)
+        cut-off (inc (count (.getPath directory)))
+        path (fs/file directory "extract")
+        extracting? (fs/exists? (fs/file directory ".extracting"))]
+    (when (and (fs/exists? path) (= multi_file? "1"))
+      (let [files (filter fs/file? (file-seq path))]
+        (for [file files]
+          (let [path (subs (.getPath file) cut-off)
+                components (fs/split path)]
+            {:path path
+             :path_components components
+             :name (last components)
+             :size (fs/size (.getPath file))
+             :progress (if extracting? 0 100)
+             :enabled true
+             :extracted true}))))))
+
 ;; TODO: reason here for creating map-producing rtorrent api, like korma
 ;; TODO: note that rtorrent/torrent doesn't work with get_custom=whatever
 (defn get-download [hash]
   (let [download (rtorrent/torrent hash
                    :get_name
                    :get_hash
-                   :get_directory
                    :get_complete
                    :get_ratio
                    :get_message
@@ -122,12 +143,9 @@
                    [:get_custom "levee-locks"]
                    [:get_custom "levee-date-added"])
         download (construct-download download)
-        files (get-files hash)]
-    (assoc download :files files)))
-
-;; extracting (?):
-;;   path
-;;   size
+        download (assoc download :files (get-files hash))
+        download (assoc download :extracted-files (get-extracted hash))]
+    download))
 
 (defn commit-file-priorities [{:keys [route-params json-params]}]
   (let [hash (:hash route-params)
@@ -148,7 +166,7 @@
   (let [uploader (rtorrent/get-custom hash "levee-uploader")
         locks (cheshire.core/parse-string (rtorrent/get-custom hash "levee-locks"))
         current-user (users/current-user req)]
-    (if (or (get (:roles current-user) :levee.auth/admin)
+    (if (or (users/admin? req)
             (and
              (= uploader (:username current-user))
              (empty? locks)))
