@@ -46,12 +46,12 @@
   "construct a multicall call specification"
   [call]
   (if-not (sequential? call)
-    {:methodName (name call)}
+    {:methodName (name call) :params []}
     (let [[method & args] call
           method-name (name method)]
       (if args
         {:methodName method-name :params args}
-        {:methodName method-name}))))
+        {:methodName method-name :params []}))))
 
 (defn multicall
   "perform a multicall"
@@ -118,14 +118,10 @@
 (defmacro tracker  [hash id & args] `(get-resource :tracker  ~[hash id] ~@args))
 (defmacro trackers [hash & args]    `(get-resource :trackers ~[hash 0]  ~@args))
 
-;; TODO: establish this so that it can be used with load-torrent and load-magnet
+;; locks and date-added are added by rtorrent
 (defn on-load [uploader]
-  (let [uploader (base64-encode uploader)
-        timestamp (base64-encode (to-string (now)))
-        locks (base64-encode (cheshire.core/generate-string []))]
-    [(str "d.custom.set=levee-uploader," uploader)
-     (str "d.custom.set=levee-date-added," timestamp)
-     (str "d.custom.set=levee-locks," locks)]))
+  (let [uploader (base64-encode uploader)]
+    [(str "d.custom.set=levee-uploader," uploader)]))
 
 ;; check (important because apparently bad stuff happens if add existing)
 ;;   view_list
