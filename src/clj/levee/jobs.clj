@@ -18,7 +18,7 @@
                            (-> (:levee-date-added %)
                                (base64-decode)
                                (from-string)
-                               (plus (weeks 1))))
+                               (plus (weeks 2))))
                     (update-in [:levee-locks]
                                (comp cheshire.core/parse-string base64-decode)))
         torrents (map transform torrents)
