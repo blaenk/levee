@@ -1,10 +1,12 @@
 (ns levee.main
-  (:require [org.httpkit.server :refer [run-server]]
-            [levee.handler :refer [app]]
-            [levee.rtorrent :as rtorrent]
-            [levee.db :as db]
-            [environ.core :refer [env]]
-            [crypto.random :as random])
+  (:require
+    [org.httpkit.server :refer [run-server]]
+    [levee.handler :refer [app]]
+    [levee.rtorrent :as rtorrent]
+    [levee.db :as db]
+    [levee.jobs :as jobs]
+    [environ.core :refer [env]]
+    [crypto.random :as random])
   (:gen-class))
 
 (defonce server (atom nil))
@@ -21,6 +23,9 @@
   (subs (random/url-part 16) 0 16))
 
 (defn -main []
+  (.start (Thread. jobs/prune))
+  (.start (Thread. jobs/stale))
+
   (let [port (Integer/parseInt (env :port))]
     (if (clojure.string/blank? (env :secret))
       (println (str "Use this secret key: " (generate-secret-key)))

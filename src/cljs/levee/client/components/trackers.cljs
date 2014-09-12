@@ -68,9 +68,7 @@
 
       (om/transact!
         trackers
-        #(sort (fn [a b]
-                 (common/compare-ignore-case (:name a) (:name b)))
-               %)))
+        #(sort (fn [a b] (common/compare-ignore-case (:name a) (:name b))) %)))
 
     om/IRender
     (render [_]
