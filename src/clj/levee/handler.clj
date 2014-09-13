@@ -34,9 +34,12 @@
                   [users :as users]
                   [common :refer [handle-resource]]]))
 
-(defn hot-reload [handler]
+(defn dev-handlers [handler]
   (if (dev?)
-    (reload/wrap-reload handler)
+    (-> handler
+      (wrap-with-logger)
+      (prone/wrap-exceptions)
+      (reload/wrap-reload))
     handler))
 
 (defroutes base-routes
@@ -89,7 +92,5 @@
       (wrap-json-response)
       (wrap-accept-param)
       (wrap-gzip)
-      (wrap-with-logger)
-      (prone/wrap-exceptions)
-      (hot-reload)))
+      (dev-handlers)))
 
