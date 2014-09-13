@@ -2,7 +2,8 @@
   (:require [korma.db :refer [create-db default-connection sqlite3]]
             [korma.core :refer :all]
             [me.raynes.fs :as fs]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [levee.common :as common]))
 
 (defn connect []
   (let [db (create-db

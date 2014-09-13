@@ -1,6 +1,6 @@
 (ns levee.rtorrent
   (:require [levee.scgi :as scgi]
-            [levee.common :refer [base64-encode base64-decode]]
+            [levee.common :refer [base64-encode base64-decode conf]]
             [necessary-evil.core :as xml-rpc]
             [bencode.core :as bencode]
             [bencode.metainfo.reader
@@ -33,7 +33,7 @@
 ;;       :params ("85320F7A0686F7C5F7B7425FA94ECCD8A787E1A3" 0)}))
 
 (def endpoint
-  (str "scgi://" (common/conf :rtorrent)))
+  (str "scgi://" (conf :rtorrent)))
 
 (defn call
   "helper function for calling rtorrent with predefined endpoint"

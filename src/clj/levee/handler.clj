@@ -27,7 +27,7 @@
     [clj-time.core :refer [in-seconds interval now weeks from-now]]
 
     [levee.db :as db]
-    [levee.common :refer [dev?]]
+    [levee.common :refer [dev? conf]]
     [levee.views.layout :as layout]
     [levee.routes [downloads :as downloads]
                   [trackers :as trackers]
@@ -82,7 +82,7 @@
          :unauthorized-handler #'unauthorized-handler})
       (compojure.handler/site
         {:session
-         {:store (cookie-store {:key (common/conf :secret)})
+         {:store (cookie-store {:key (conf :secret)})
           :cookie-name "levee-session"
           :cookie-attrs
             {:max-age (-> (interval (now) (-> 2 weeks from-now))
