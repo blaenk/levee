@@ -236,7 +236,8 @@
      :body ""}))
 
 (defn serve-file [file]
-  (if (not= (conf :sendfile) "no")
+  (if (and (not (nil? (conf :sendfile)))
+           (not= (conf :sendfile) "no"))
     (sendfile file)
     (response/file-response file {:root (rtorrent/call :get_directory)})))
 
