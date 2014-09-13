@@ -54,8 +54,7 @@
        ;; will themselves be strings, keeps it consistent
        {:env "prod"
         :port "3000"
-        :rtorrent "localhost:5000"
-        :db "levee.db"}}
+        :rtorrent "localhost:5000"}}
      :dev
       {:source-paths ["dev"]
        :aliases

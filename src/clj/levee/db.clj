@@ -5,7 +5,11 @@
             [environ.core :refer [env]]))
 
 (defn connect []
-  (let [db (create-db (sqlite3 {:db (.getPath (fs/file "db" (env :db)))}))]
+  (let [db (create-db
+             (sqlite3
+               {:db (.getPath (fs/file "db" (if (common/dev?)
+                                              "levee.dev.db"
+                                              "levee.db")))}))]
     (default-connection db)))
 
 (defentity users)
