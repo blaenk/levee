@@ -3,7 +3,7 @@
 cd "$(dirname "$0")/.."
 
 # don't change this
-# export ENV=prod
+export ENV=prod
 
 # rtorrent scgi endpoint
 # export RTORRENT=localhost:5000
