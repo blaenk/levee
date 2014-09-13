@@ -15,8 +15,8 @@
    :env "dev"
    :port "3000"})
 
-(defn conf [k]
-  (get (merge defaults env) k))
+(defonce conf
+  (merge defaults env))
 
 (defn dev? [] (= (conf :env) "dev"))
 

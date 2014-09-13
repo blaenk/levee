@@ -43,6 +43,8 @@
     handler))
 
 (defroutes base-routes
+  ; this should be intercepted by a webserver
+  (route/files "/" {:root "resources/public"})
   (GET "/*" [] (friend/authenticated (layout/app))))
 
 (def app-routes

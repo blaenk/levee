@@ -328,7 +328,7 @@
             #(om/update! download [:extracted-files] %))))
 
       (om/set-state! owner :websocket
-        (common/websocket (str "/downloads/" hash "/ws")))
+        (common/websocket (str "/downloads/" hash "/feed")))
 
       (set! (.-onmessage (om/get-state owner :websocket))
         (fn [msg]

@@ -146,7 +146,7 @@
 
       ;; TODO: select ws or wss based on http https, keep hostname + port
       (om/set-state! owner :websocket
-                     (common/websocket "/downloads/ws"))
+                     (common/websocket "/downloads/feed"))
 
       (set! (.-onmessage (om/get-state owner :websocket))
             (fn [msg]

@@ -3,6 +3,8 @@
             [levee.common :refer [base64-encode base64-decode]]
             [levee.models.users :as users]
             [me.raynes.fs :as fs]
+            [org.httpkit.server :refer :all]
+            [levee.common :refer [conf]]
             [ring.util.response :as response]))
 
 (defn- get-progress
@@ -200,4 +202,41 @@
            (get json-params "start")
            (rtorrent/on-load (:username current-user)))
     (response/response {:success true})))
+
+;; open?, close, websocket?, send!, on-receive, on-close
+(defn downloads-feed [req]
+  (with-channel req chan
+    (loop []
+      (Thread/sleep 5000)
+      (when (open? chan)
+        (send! chan (cheshire.core/generate-string (get-downloads)))
+        (recur)))))
+
+(defn download-feed [hash req]
+  (with-channel req chan
+    (loop [fast? false]
+      (Thread/sleep (if fast? 1000 5000))
+      (when (open? chan)
+        (let [d (cheshire.core/generate-string (get-download hash))
+              downloading? (or (= (:state d) "downloading")
+                               (= (:state d) "hashing"))]
+          (send! chan d)
+          (recur downloading?))))))
+
+(defn- sendfile
+  "constructs an X-Accel-Redirect (sendfile) request for nginx"
+  [file]
+  (let [sendfile-path (.getPath (fs/file "/sendfile" file))
+        base-name (fs/base-name file)]
+    {:status 200
+     :headers
+       {"Content-Disposition" (str "filename=\"" base-name "\"")
+        "Content-Type" ""
+        "X-Accel-Redirect" sendfile-path}
+     :body ""}))
+
+(defn serve-file [file]
+  (if (conf :sendfile)
+    (sendfile file)
+    (response/file-response file {:root (rtorrent/call :get_directory)})))
 
