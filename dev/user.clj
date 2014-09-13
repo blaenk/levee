@@ -1,4 +1,5 @@
-(ns user)
+(ns user
+  (:require [clojure.pprint :refer [pprint]]))
 
 (defn- get-sys-clip
   "A helper fn to get the clipboard object"
@@ -28,7 +29,7 @@
     input-string)))))
 
 (defn set-clip-pp! [input-string]
-  (set-clip! (with-out-str (clojure.pprint/pprint input-string))))
+  (set-clip! (with-out-str (pprint input-string))))
 
 (defn read-clip
   "Used to read an s-expression in the clipboard."
