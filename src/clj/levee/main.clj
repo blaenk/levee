@@ -23,6 +23,8 @@
   (subs (random/url-part 16) 0 16))
 
 (defn -main []
+  (db/connect)
+
   (.start (Thread. jobs/prune))
   (.start (Thread. jobs/stale))
 

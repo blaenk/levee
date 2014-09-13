@@ -75,8 +75,7 @@
             ["cljsbuild" "once" "prod"]
             ["uberjar"]]}
        :plugins
-         [[com.cemerick/austin "0.1.5"]
-          [lein-environ "1.0.0"]
+         [[lein-environ "1.0.0"]
           [lein-cljsbuild "1.0.3"]
           [lein-figwheel "0.1.4-SNAPSHOT"]
           [lein-shell "0.4.0"]
@@ -107,12 +106,7 @@
      :uberjar
       {:omit-source true
        ; only use this here, not in dev else stuff breaks
-       :aot :all
-       :env
-         {:env "prod"
-          :port "3000"
-          :rtorrent "localhost:5000"
-          :db "levee.db"}}}
+       :aot :all}}
   :cljsbuild
    {:builds
     {:dev

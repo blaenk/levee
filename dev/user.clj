@@ -1,13 +1,4 @@
-(ns user
-  (:require [clojure.tools.namespace.repl :as repl]
-            [cemerick.austin.repls :as repls]
-            [cemerick.austin :as austin]))
-
-(def repl-env (atom nil))
-
-(defn brepl []
-  (reset! repls/browser-repl-env (austin/repl-env))
-  (repls/cljs-repl repl-env))
+(ns user)
 
 (defn- get-sys-clip
   "A helper fn to get the clipboard object"

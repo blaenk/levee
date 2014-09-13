@@ -2,8 +2,7 @@
   (:require [hiccup.page :refer [html5 include-css include-js]]
             [hiccup.element :refer [javascript-tag link-to]]
             [cheshire.core :refer [generate-string]]
-            [levee.common :refer [dev?]]
-            [cemerick.austin.repls :refer [browser-connected-repl-js]]))
+            [levee.common :refer [dev?]]))
 
 (defn- google-fonts [name & {:keys [sizes italics]}]
   (let [stem "http://fonts.googleapis.com/css?family="
@@ -52,9 +51,7 @@
            "goog.require('levee.client.components.downloads');\n"
            "goog.require('levee.client.components.download');\n"
            "goog.require('levee.client.core');\n"
-           "goog.require('figwheel');")))
-     (when (dev?)
-       [:script (browser-connected-repl-js)])]))
+           "goog.require('figwheel');")))]))
 
 (defn external [scope body]
   (html5
