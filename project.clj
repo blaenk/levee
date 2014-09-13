@@ -52,9 +52,7 @@
       {:env
        ;; best to use strings here since env-vars and java props
        ;; will themselves be strings, keeps it consistent
-       {:env "prod"
-        :port "3000"
-        :rtorrent "localhost:5000"}}
+       {:env "prod"}}
      :dev
       {:source-paths ["dev"]
        :aliases

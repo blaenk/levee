@@ -33,7 +33,7 @@
 ;;       :params ("85320F7A0686F7C5F7B7425FA94ECCD8A787E1A3" 0)}))
 
 (def endpoint
-  (str "scgi://" (env :rtorrent)))
+  (str "scgi://" (common/conf :rtorrent)))
 
 (defn call
   "helper function for calling rtorrent with predefined endpoint"

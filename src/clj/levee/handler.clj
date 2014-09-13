@@ -82,7 +82,7 @@
          :unauthorized-handler #'unauthorized-handler})
       (compojure.handler/site
         {:session
-         {:store (cookie-store {:key (env :secret)})
+         {:store (cookie-store {:key (common/conf :secret)})
           :cookie-name "levee-session"
           :cookie-attrs
             {:max-age (-> (interval (now) (-> 2 weeks from-now))

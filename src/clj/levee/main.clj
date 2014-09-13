@@ -25,13 +25,13 @@
 (defn -main []
   (db/connect)
 
-  (.start (Thread. jobs/prune))
-  (.start (Thread. jobs/stale))
-
-  (let [port (Integer/parseInt (env :port))]
-    (if (clojure.string/blank? (env :secret))
-      (println (str "Use this secret key: " (generate-secret-key)))
+  (let [port (Integer/parseInt (common/conf :port))]
+    (if (clojure.string/blank? (common/conf :secret))
+      (println (str "secret key: " (generate-secret-key)))
       (do
+        (.start (Thread. jobs/prune))
+        (.start (Thread. jobs/stale))
+
         (start-server port)
-        (println (str "Listening on port " port))))))
+        (println (str "listening on: " port))))))
 
