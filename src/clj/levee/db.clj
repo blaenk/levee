@@ -1,10 +1,12 @@
 (ns levee.db
-  (:require [korma.db :refer [defdb sqlite3]]
+  (:require [korma.db :refer [create-db default-connection sqlite3]]
             [korma.core :refer :all]
             [me.raynes.fs :as fs]
             [environ.core :refer [env]]))
 
-(defdb db (sqlite3 {:db (.getPath (fs/file "db" (env :db)))}))
+(defn connect []
+  (let [db (create-db (sqlite3 {:db (.getPath (fs/file "db" (env :db)))}))]
+    (default-connection db)))
 
 (defentity users)
 (defentity trackers)
