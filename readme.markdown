@@ -2,7 +2,7 @@ Levee is a multi-user interface for rtorrent that strives for simplicity.
 
 # Build
 
-[Leiningen] is required to build the project, which itself requires the Java Deevlopment Kit (JDK). [node.js] is needed for [bower] and [grunt] to build the stylesheet.
+[Leiningen] is required to build the project, which itself requires the Java Development Kit (JDK). [node.js] is needed for [bower] and [grunt] to build the stylesheet.
 
 [Leiningen]: http://leiningen.org/
 [node.js]: http://nodejs.org
