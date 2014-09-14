@@ -1,0 +1,13 @@
+[Unit]
+Description=levee for %i
+Requires=network.target local-fs.target
+After=syslog.target
+
+[Service]
+Type=simple
+User=%I
+ExecStart=/path/to/levee/bin/levee
+
+[Install]
+WantedBy=multi-user.target
+
