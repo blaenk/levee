@@ -67,10 +67,21 @@
 
           "build" ^{:doc "build levee"}
           ["do"
-            "clean"
-            ["shell" "grunt" "less"]
-            ["cljsbuild" "once" "prod"]
-            ["uberjar"]]}
+           "clean"
+           ["shell" "grunt" "less"]
+           ["cljsbuild" "once" "prod"]
+           ["uberjar"]]
+
+          "package" ^{:doc "create tarball"}
+          ["do"
+           ["shell" "mkdir" "-p" "target/levee/target"]
+           ["shell" "cp" "target/levee-0.1.0-standalone.jar" "target/levee/target"]
+           ["shell" "cp" "-r"
+             "bin" "db" "resources" "scripts"
+             "target/levee/"]
+           ["shell" "tar"
+             "cvzf" "levee.tar.gz"
+             "target/levee"]]}
        :plugins
          [[lein-environ "1.0.0"]
           [lein-cljsbuild "1.0.3"]
