@@ -42,7 +42,7 @@ There's a sample systemd unit in `etc/levee@.service`.
 
 ## nginx
 
-If you want to serve this behind nginx, which I recommend---especially to leverage X-Accel-Redirect for file downloads---you may want to use something like the following configuration. Don't forget to set `SENDFILE=yes` as well.
+If you want to serve this behind nginx, which I recommend—especially to leverage X-Accel-Redirect for file downloads—you may want to use something like the following configuration. Don't forget to set `SENDFILE=yes` as well.
 
 ```
 http {
