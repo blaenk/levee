@@ -4,17 +4,15 @@ session = ~/rtorrent/session
 directory = ~/rtorrent/downloads
 set_xmlrpc_size_limit = 5242880
 
-# set uploader to base64(system)
-system.method.insert = set_uploader,simple,"d.custom.set=levee-uploader,c3lzdGVt"
 
-# same as above if it hasn't ben set yet
-system.method.insert = set_default_uploader,simple,"branch=not=$d.get_custom=levee-uploader,\"d.custom.set=levee-uploader,c3lzdGVt\""
+# set uploader to base64(system)
+system.method.insert = set_uploader,simple,"branch=not=$d.get_custom=levee-uploader,\"d.custom.set=levee-uploader,c3lzdGVt\""
 
 # set empty locks
-system.method.insert = set_locks,simple,"d.custom.set=levee-locks,W10="
+system.method.insert = set_locks,simple,"branch=not=$d.get_custom=levee-locks,\"d.custom.set=levee-locks,W10=\""
 
 # set timestamp for when it was added
-system.method.insert = set_date_added,simple,"d.custom.set=levee-date-added,$execute_capture_nothrow={/path/to/levee/scripts/base64-date.sh}"
+system.method.insert = set_date_added,simple,"branch=not=$d.get_custom=levee-date-added,\"d.custom.set=levee-date-added,$execute_capture_nothrow={/path/to/levee/scripts/base64-date.sh}\""
 
 # extract method
 system.method.insert = extract_download,simple,"execute={/path/to/levee/scripts/extract.sh,$get_directory=,$d.get_name=}"
@@ -23,10 +21,10 @@ system.method.insert = extract_download,simple,"execute={/path/to/levee/scripts/
 system.method.insert = erase_download,simple,"execute={/path/to/levee/scripts/erase.sh,$get_directory=,$d.get_name=}"
 
 # watch directory and set system uploader
-schedule = levee_watch, 5, 5, "load.normal=~/rtorrent/watch/*.torrent,set_uploader="
+schedule = levee_watch, 5, 5, "load.normal=~/rtorrent/watch/*.torrent"
 
 # for all added torrents, set: date-added, locks, default uploader (if none set)
-system.method.set_key = event.download.inserted,set_meta,"set_date_added=;set_locks=;set_default_uploader="
+system.method.set_key = event.download.inserted,set_meta,"set_date_added=;set_locks=;set_uploader="
 
 # extract archives when download finishes
 system.method.set_key = event.download.finished,extract,"extract_download="
