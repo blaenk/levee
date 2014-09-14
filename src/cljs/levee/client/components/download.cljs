@@ -438,9 +438,9 @@
                 [:div.ratio [:strong "Total Uploaded: "]
                  (common/filesize total_uploaded)]
                 [:div.ratio [:strong "Up Rate: "]
-                 (str (common/filesize up_rate ) "s")]
+                 (str (common/filesize up_rate ) "/s")]
                 [:div.ratio [:strong "Down Rate: "]
-                 (str (common/filesize down_rate) "s")]
+                 (str (common/filesize down_rate) "/s")]
                 [:div.ratio [:strong "seeders: "] seeders]
                 [:div.ratio [:strong "leeches "] leeches]
                 ])
