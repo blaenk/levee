@@ -4,7 +4,7 @@ Levee has a clean, responsive UI which uses HTML5 WebSockets to keep up-to-date 
 
 # Build
 
-[Leiningen] is required to build the project, which itself requires the Java Development Kit (JDK). [node.js] is needed for [bower] and [grunt] to build the stylesheet.
+[Leiningen] is required to build the project, which itself requires the JDK. [node.js] is needed for [bower] and [grunt] to build the stylesheet.
 
 [Leiningen]: http://leiningen.org/
 [node.js]: http://nodejs.org
