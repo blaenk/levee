@@ -21,17 +21,18 @@ $ cd levee
 # fetch bootstrap
 $ bower install
 
-# compile css
-$ grunt less
-
 # download project dependencies
 $ lein deps
 
-# compile clojurescript to javascript
-$ lein cljsbuild once prod
-
 # build jar with all dependencies bundled
-$ lein uberjar
+$ lein build
+```
+
+If you want, you can then package it up to use on a separate computer so that the only required dependency is a Java runtime:
+
+``` bash
+# create tarball with necessary files
+$ lein package
 ```
 
 # Usage
