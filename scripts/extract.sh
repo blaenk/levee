@@ -28,7 +28,7 @@ touch .extracting
 
 for archive in $(find . -name '*.rar' -o -name '*.7z' -o -name '*.zip'); do
   dir_name=$(basename ${archive%.*})
-  7z x archive "-oextract/$dir_name" -y
+  7z x $archive "-oextract/$dir_name" -y
 done
 
 rm .extracting
