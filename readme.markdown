@@ -1,4 +1,6 @@
-Levee is a multi-user interface for rtorrent that strives for simplicity.
+Levee is a multi-user interface for rtorrent that strives for simplicity, written in Clojure (http-kit/compojure) and ClojureScript (om/react).
+
+Levee has a clean, responsive UI which uses HTML5 WebSockets to keep up-to-date data. It supports drag-and-drop file uploads as well as magnet links. There's a simple lock-system to facilitate the mult-user environment by preventing members from removing items that others are still interested in.
 
 # Build
 
