@@ -13,6 +13,7 @@
 (def ^:private defaults
   {:rtorrent "localhost:5000"
    :env "dev"
+   :host "localhost"
    :port "3000"})
 
 (defonce conf

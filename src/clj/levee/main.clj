@@ -17,8 +17,8 @@
     (@server :timeout 100)
     (reset! server nil)))
 
-(defn start-server [port]
-  (reset! server (run-server app {:port port})))
+(defn start-server [opts]
+  (reset! server (run-server app opts)))
 
 (defn generate-secret-key []
   (subs (random/url-part 16) 0 16))
@@ -26,13 +26,13 @@
 (defn -main []
   (db/connect)
 
-  (let [port (Integer/parseInt (conf :port))]
-    (if (clojure.string/blank? (conf :secret))
-      (println (str "secret key: " (generate-secret-key)))
-      (do
-        (.start (Thread. jobs/prune))
-        (.start (Thread. jobs/stale))
+  (if (clojure.string/blank? (conf :secret))
+    (println (str "secret key: " (generate-secret-key)))
+    (let [port (Integer/parseInt (conf :port))
+          host (conf :host)]
+      (.start (Thread. jobs/prune))
+      (.start (Thread. jobs/stale))
 
-        (start-server port)
-        (println (str "listening on: " port))))))
+      (start-server {:host host :port port})
+      (println (str "listening on: " port)))))
 

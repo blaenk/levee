@@ -6,15 +6,18 @@ cd "$(dirname "$0")/.."
 export ENV=prod
 
 # rtorrent scgi endpoint
-# export RTORRENT=localhost:5000
+export RTORRENT=localhost:5000
+
+# ip to bind to
+export HOST=localhost
 
 # port to listen on
-# export PORT=3000
+export PORT=3000
 
 # if you run levee without uncommenting
 # and/or setting this, levee will suggest
 # a secret key to use here
-# export SECRET=replaceme
+export SECRET=replaceme
 
 # only uncomment this if you've configured
 # a webserver to serve rtorrent downloads
