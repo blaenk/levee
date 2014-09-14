@@ -187,7 +187,6 @@
     (response/response new-locks)))
 
 (defn load-torrent [{:keys [multipart-params] :as req}]
-  (clojure.pprint/pprint multipart-params)
   (let [current-user (users/current-user req)]
     (apply rtorrent/load-torrent
            (get-in multipart-params ["file" :tempfile])
