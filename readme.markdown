@@ -11,7 +11,7 @@ Levee is a multi-user interface for rtorrent that strives for simplicity.
 
 ``` bash
 # install bower and grunt
-# npm install -g bower grunt-cli
+$ sudo npm install -g bower grunt-cli
 
 $ git clone https://github.com/blaenk/levee
 $ cd levee
