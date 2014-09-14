@@ -5,7 +5,7 @@
             [levee.common :refer [dev?]]))
 
 (defn- google-fonts [name & {:keys [sizes italics]}]
-  (let [stem "http://fonts.googleapis.com/css?family="
+  (let [stem "//fonts.googleapis.com/css?family="
         italics (when italics
                   (let [to-italicize (if (= italics :all) sizes italics)]
                     (map #(str % "italic") to-italicize)))
