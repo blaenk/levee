@@ -33,6 +33,6 @@
       (.start (Thread. jobs/prune))
       (.start (Thread. jobs/stale))
 
-      (start-server {:host host :port port})
+      (start-server {:ip host :port port})
       (println (str "listening on: " port)))))
 
