@@ -21,7 +21,7 @@ system.method.insert = extract_download,simple,"execute={/path/to/levee/scripts/
 system.method.insert = erase_download,simple,"execute={/path/to/levee/scripts/erase.sh,$get_directory=,$d.get_name=}"
 
 # watch directory and set system uploader
-schedule = levee_watch, 5, 5, "load.normal=~/rtorrent/watch/*.torrent"
+schedule = levee_watch, 5, 5, "load_start=~/rtorrent/watch/*.torrent"
 
 # for all added torrents, set: date-added, locks, default uploader (if none set)
 system.method.set_key = event.download.inserted,set_meta,"set_date_added=;set_locks=;set_uploader="
