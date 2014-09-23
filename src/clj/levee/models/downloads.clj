@@ -63,8 +63,7 @@
    :name (last path_components)
    :size (Long/parseLong size_bytes)
    :progress (format "%.0f" (get-progress completed_chunks size_chunks))
-   :enabled (not= priority "0")
-   :extracted false})
+   :enabled (not= priority "0")})
 
 (defn get-downloads []
   (let [downloads (rtorrent/torrents "main"
@@ -118,8 +117,7 @@
              :name (last components)
              :size (fs/size (.getPath file))
              :progress (if extracting? 0 100)
-             :enabled true
-             :extracted true}))))))
+             :enabled true}))))))
 
 ;; TODO: reason here for creating map-producing rtorrent api, like korma
 ;; TODO: note that rtorrent/torrent doesn't work with get_custom=whatever
