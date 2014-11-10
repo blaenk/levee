@@ -241,7 +241,7 @@
 
             filtered-extracted (filter #(.test regex (:path %)) (:extracted-files download))
             extracted-files-root (file-tree filtered-extracted)
-            file-count (+ (count filtered) (count filetered-extracted))]
+            file-count (+ (count filtered) (count filtered-extracted))]
         (html
           [:div.files-section
            (when (> file-count 1)
