@@ -250,23 +250,23 @@ ul.nav.navbar-nav > li > a {
 }
 
 .download-state-closed {
-  background-color: #777;
+  background-color: @gray-light;
 }
 
 .download-state-downloading {
-  background-color: #5cb85c;
+  background-color: @brand-success;
 }
 
 .download-state-hashing {
-  background-color: #f0ad4e;
+  background-color: @brand-warning;
 }
 
 .download-state-seeding {
-  background-color: #5bc0de;
+  background-color: @brand-info;
 }
 
 .download-state-stopped {
-  background-color: #d9534f;
+  background-color: @brand-danger;
 }
 
 .downloads-scope {
@@ -278,6 +278,10 @@ ul.nav.navbar-nav > li > a {
 .btn {
   border-radius: 0;
   background-image: none;
+}
+
+.lock-button {
+  background-color: @gray-lighter;
 }
 
 .downloads-scope .btn {
@@ -631,3 +635,4 @@ table.table.trackers, table.table.users {
 select,   textarea,   input[type="text"],   input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"] {
   font-size: 16px;
 }
+

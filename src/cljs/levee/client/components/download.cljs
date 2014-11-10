@@ -241,7 +241,7 @@
 
             filtered-extracted (filter #(.test regex (:path %)) (:extracted-files download))
             extracted-files-root (file-tree filtered-extracted)
-            file-count (+ (count files) (count (:extracted-files download)))]
+            file-count (+ (count filtered) (count filetered-extracted))]
         (html
           [:div.files-section
            (when (> file-count 1)
@@ -383,7 +383,7 @@
              [:div.download-commands.btn-toolbar {:role "toolbar"}
               [:div.btn-group
                 (let [locked ((set locks) username)]
-                  (command-button
+                  (command-button {:class "lock-button"}
                     (if locked "unlock" "lock")
                     (if locked (common/glyphicon "link") (common/glyphicon "lock"))
                     (fn [e]
