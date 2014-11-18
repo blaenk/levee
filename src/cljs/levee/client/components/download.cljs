@@ -236,17 +236,18 @@
     om/IRenderState
     (render-state [_ {:keys [pattern chan]}]
       (let [regex (common/fuzzy-search pattern)
+            file-count (count files)
             filtered (filter #(.test regex (:path %)) files)
             root (file-tree filtered)
 
             filtered-extracted (filter #(.test regex (:path %)) (:extracted-files download))
             extracted-files-root (file-tree filtered-extracted)
-            file-count (+ (count filtered) (count filtered-extracted))]
+            filtered-file-count (+ (count filtered) (count filtered-extracted))]
         (html
           [:div.files-section
            (when (> file-count 1)
              (om/build file-search-view
-               {:file-count file-count
+               {:file-count filtered-file-count
                 :file-settings file-settings
                 :is-tree (or
                            (contains? (second root) :folders)
@@ -383,7 +384,7 @@
              [:div.download-commands.btn-toolbar {:role "toolbar"}
               [:div.btn-group
                 (let [locked ((set locks) username)]
-                  (command-button {:class "lock-button"}
+                  (command-button {:class "btn-default"}
                     (if locked "unlock" "lock")
                     (if locked (common/glyphicon "link") (common/glyphicon "lock"))
                     (fn [e]
