@@ -90,6 +90,7 @@
            [:button
             {:type "button"
              :class "btn btn-default dropdown-toggle"
+             :style {:border-right "0"}
              :data-toggle "dropdown"}
             [:span.scope-label (:scope search)]
             [:span.caret]]
