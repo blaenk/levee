@@ -326,7 +326,10 @@
             #(om/update! download [:files] %))
 
           (common/api :get (str "/downloads/" hash "/extracted")
-            #(om/update! download [:extracted-files] %))))
+            #(om/update! download [:extracted-files] %))
+
+          (common/api :get (str "/downloads/" hash "/trackers")
+            #(om/update! download [:trackers] %))))
 
       (om/set-state! owner :websocket
         (common/websocket (str "/downloads/" hash "/feed")))
@@ -348,7 +351,7 @@
                     progress uploader date-added
                     locks files total_uploaded
                     up_rate down_rate seeders leeches
-                    completed_bytes size_bytes]} download
+                    completed_bytes size_bytes trackers]} download
             username (:username current-user)]
         (html
           (common/spinner-when (empty? download)
@@ -394,7 +397,23 @@
                           (om/update! download [:locks] m))))))
 
                 (command-button {:class "btn-info"} "edit files" (common/glyphicon "check")
-                  #(om/update-state! owner :editing not))
+                  (fn [e]
+                    (om/update-state! owner :editing not)
+
+                    ; if we're now editing the files, close websocket
+                    ; to avoid overwriting changes
+                    ; if we stop editing files then re-enable
+                    (if (om/get-state owner :editing)
+                      (.close (om/get-state owner :websocket))
+                      (do
+                        (om/set-state! owner :websocket
+                          (common/websocket (str "/downloads/" hash "/feed")))
+
+                        (set! (.-onmessage (om/get-state owner :websocket))
+                          (fn [msg]
+                            (let [json (.parse js/JSON (.-data msg))
+                                  clj (js->clj json :keywordize-keys true)]
+                              (om/update! download clj))))))))
 
                 (command-button {:class "btn-primary"} "stats" (common/glyphicon "stats")
                   #(om/update-state! owner :show-stats not))
@@ -435,16 +454,19 @@
                 (when (= state "downloading")
                   [:div.ratio [:strong "ETA: "]
                    (eta completed_bytes size_bytes down_rate)])
-                [:div.ratio [:strong "Ratio: "] ratio]
-                [:div.ratio [:strong "Total Uploaded: "]
+                [:div.ratio [:strong "ratio: "] ratio]
+                [:div.ratio [:strong "total uploaded: "]
                  (common/filesize total_uploaded)]
-                [:div.ratio [:strong "Up Rate: "]
+                [:div.ratio [:strong "up rate: "]
                  (str (common/filesize up_rate ) "/s")]
-                [:div.ratio [:strong "Down Rate: "]
+                [:div.ratio [:strong "down rate: "]
                  (str (common/filesize down_rate) "/s")]
                 [:div.ratio [:strong "seeders: "] seeders]
                 [:div.ratio [:strong "leeches "] leeches]
-                ])
+                [:div.tracker [:strong "trackers:"]
+                 [:ul
+                  (for [t trackers]
+                    [:li t])]]])
 
              (when-not (clojure.string/blank? message)
                [:div.alert.alert-warning.download-message {:role "alert"} message])

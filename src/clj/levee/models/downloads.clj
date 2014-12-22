@@ -65,6 +65,10 @@
    :progress (format "%.0f" (get-progress completed_chunks size_chunks))
    :enabled (not= priority "0")})
 
+(defn get-trackers [hash]
+  (let [trackers (rtorrent/trackers hash :get_url)]
+    (map #(.getHost (java.net.URL. (:url %))) trackers)))
+
 (defn get-downloads []
   (let [downloads (rtorrent/torrents "main"
                     :get_name
@@ -144,7 +148,8 @@
                    [:get_custom "levee-date-added"])
         download (construct-download download)
         download (assoc download :files (get-files hash))
-        download (assoc download :extracted-files (get-extracted hash))]
+        download (assoc download :extracted-files (get-extracted hash))
+        download (assoc download :trackers (get-trackers hash))]
     download))
 
 (defn commit-file-priorities [{:keys [route-params json-params]}]

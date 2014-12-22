@@ -25,6 +25,7 @@
       (POST "/files" req (friend/authenticated (downloads/commit-file-priorities req)))
 
       (GET "/extracted" req (friend/authenticated (response/response (downloads/get-extracted hash))))
+      (GET "/trackers" req (friend/authenticated (response/response (downloads/get-trackers hash))))
 
       (GET "/feed" req (friend/authenticated (downloads/download-feed hash req)))
 
