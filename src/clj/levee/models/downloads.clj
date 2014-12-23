@@ -67,7 +67,7 @@
 
 (defn get-trackers [hash]
   (let [trackers (rtorrent/trackers hash :get_url)]
-    (map #(.getHost (java.net.URI. (:url %))) trackers)))
+    (map :url trackers)))
 
 (defn get-downloads []
   (let [downloads (rtorrent/torrents "main"
