@@ -29,31 +29,39 @@
 
 (defn prune []
   (while true
-    (let [expired (expired-torrents)
-          expired-count (count expired)]
-      (apply rtorrent/multicall
-        (for [t expired]
-          [:d.erase (:hash t)]))
-      (when (> expired-count 0)
-        (log/info "pruned" expired-count "torrents")))
-    (Thread/sleep
-      (-> (interval (now) (-> 10 minutes from-now)) in-millis))))
+    (try
+      (do
+        (let [expired (expired-torrents)
+              expired-count (count expired)]
+          (apply rtorrent/multicall
+            (for [t expired]
+              [:d.erase (:hash t)]))
+          (when (> expired-count 0)
+            (log/info "pruned" expired-count "torrents")))
+        (Thread/sleep
+          (-> (interval (now) (-> 10 minutes from-now)) in-millis)))
+      (catch Exception e
+        (log/error e "There was an error in pruning")))))
 
 (defn stale []
   (while true
-    (let [basepath (rtorrent/call :get_directory)
-          rt_dirs (set (map #(fs/file basepath (:name %))
-                            (rtorrent/torrents "main" :name)))
-          dirs (set (fs/list-dir basepath))
-          stale (clojure.set/difference dirs rt_dirs)
-          stale-count (count stale)]
-      (doseq [s stale]
-        (when (fs/child-of? basepath s)
-          (if (fs/directory? s)
-            (fs/delete-dir s)
-            (fs/delete s))))
-      (when (> stale-count 0)
-        (log/info "removed" stale-count "stale entities")))
-    (Thread/sleep
-      (-> (interval (now) (-> 30 minutes from-now)) in-millis))))
+    (try
+      (do
+        (let [basepath (rtorrent/call :get_directory)
+              rt_dirs (set (map #(fs/file basepath (:name %))
+                                (rtorrent/torrents "main" :name)))
+              dirs (set (fs/list-dir basepath))
+              stale (clojure.set/difference dirs rt_dirs)
+              stale-count (count stale)]
+          (doseq [s stale]
+            (when (fs/child-of? basepath s)
+              (if (fs/directory? s)
+                (fs/delete-dir s)
+                (fs/delete s))))
+          (when (> stale-count 0)
+            (log/info "removed" stale-count "stale entities")))
+        (Thread/sleep
+          (-> (interval (now) (-> 30 minutes from-now)) in-millis)))
+      (catch Exception e
+        (log/error e "There was an error in clearing stales")))))
 
