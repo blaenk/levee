@@ -87,7 +87,7 @@
                       (fn [d]
                         (om/set-state! owner :uploading false)
                         (put! remove-chan [:remove file])
-                        (om/update! search [:scope] "mine")
+                        (om/update! search [:scope] "all")
                         (om/update! search [:sort] "recent")
                         (om/update! search [:pattern] ""))})))}
              "upload"]
