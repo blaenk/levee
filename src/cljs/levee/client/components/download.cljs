@@ -131,10 +131,12 @@
            (if-not finished?
              [:span.file-name file_name]
              (html/link-to {:class "file-name"}
-               (if (:multi_file? download)
-                 (str "/file/" (:name download) "/" (:path file))
-                 (str "/file/" (:path file)))
-               file_name))
+               (let [download_name (js/encodeURIComponent (:name download))
+                     uri (js/encodeURIComponent (:path file))]
+                 (if (:multi_file? download)
+                   (str "/file/" download_name "/" uri)
+                   (str "/file/" uri)))
+                 file_name))
 
            (if-not finished?
              [:span.file-progress.badge disabled-tooltip (:progress file)]
