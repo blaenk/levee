@@ -158,7 +158,8 @@
         method (if start? "load_raw_start" "load_raw")]
     (if commands
       (apply call method contents commands)
-      (call method contents))))
+      (call method contents))
+    infohash))
 
 (defn set-file-priorities
   "apply a map of file indices to priorities"

@@ -13,7 +13,7 @@
     (.stopPropagation)
     (.preventDefault)))
 
-(defn file-upload [{:keys [file search]} owner]
+(defn file-upload [{:keys [file search watching]} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -84,7 +84,8 @@
                      :processData false
                      :contentType false
                      :success
-                      (fn [d]
+                      (fn [{:keys [hash]}]
+                        (om/transact! watching #(conj % hash))
                         (om/set-state! owner :uploading false)
                         (put! remove-chan [:remove file])
                         (om/update! search [:scope] "all")
@@ -102,7 +103,7 @@
     (= (.-type file) "application/x-bittorrent")
     (re-find #"\.torrent$" (.-name file))))
 
-(defn upload-component [{:keys [uploading search] :as props} owner]
+(defn upload-component [{:keys [watching uploading search] :as props} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -235,7 +236,8 @@
            [:ul.uploads
             (map #(om/build file-upload
                    {:file %
-                    :search (:search props)}
+                    :search (:search props)
+                    :watching watching}
                    {:init-state
                     {:remove-chan remove-chan
                      :upload-mult upload-mult}})

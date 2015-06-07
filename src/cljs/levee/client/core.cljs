@@ -29,6 +29,7 @@
      :download {}
      :trackers []
      :tracker {}
+     :watching #{}
      :users []
      :user {}
      :invitations {}
@@ -49,6 +50,42 @@
       (.setItem "search-sort" (get-in new-val [:search :sort]))
       (.setItem "file-collapsed" (str (get-in new-val [:file-settings :collapsed]))))))
 
+(defn notify [old-download new-download open-url?]
+  (when-not (empty? old-download)
+    (let [old-progress (:progress old-download)
+          new-progress (:progress new-download)
+          state (:state new-download)
+          hash (:hash new-download)
+          title (:name new-download)]
+      (when (and
+              (not= old-progress "100")
+              (= new-progress "100")
+              (not= state "hashing"))
+        (do
+          (swap! app-state update-in [:watching] disj hash)
+          (let [notification
+                 (js/Notification. "Download complete"
+                                   #js {:body title
+                                        :tag hash
+                                        :icon "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAABWESUoAAAAwElEQVQ4y+XSMUuCYRSGYf/1kwhtSRJNDTlEEAUu0dASKEFDROAgJDQ4SENLgRCBiBFcDX5DvH7WD/BezzUcOKeRf2psEYAkyTOuq8kVJiU4x2sFXtArQXOOgyTJPhatEuQBt0mSPoZrO+QIsyTJO7rrIG84/i1LcIPHJPcY1IG9b+bN7HyiUwcywVlOMU0t6GGcES7rQWvBV3vJcrceZIgpRtkAuladFOBp1UUyAx/lNav6yQDcbQYdcLiFb/9XP2hPSjEVk1uMAAAAAElFTkSuQmCC"})]
+            (set! (.-onclick notification)
+                    (fn []
+                      (.focus js/window)
+                      (when open-url? (.open js/window (str "/downloads/" hash)))
+                      (.close notification)))))))))
+
+(defn notify-download [key reference old-val new-val]
+  (notify (:download old-val) (:download new-val) false))
+
+(defn- find-cursor [cursor condition]
+  (get cursor (first (keep-indexed #(when (condition %2) %1) cursor))))
+
+(defn notify-downloads [key reference old-val new-val]
+  (doseq [hash (:watching new-val)]
+    (let [old-download (find-cursor (:downloads old-val) #(= (:hash %) hash))
+          new-download (find-cursor (:downloads new-val) #(= (:hash %) hash))]
+      (notify old-download new-download true))))
+
 (common/api :get "/users/current"
   (fn [res]
     (swap! app-state #(assoc % :current-user res))))
@@ -65,13 +102,15 @@
             #js {:selector "[data-toggle=\"tooltip\"]"
                  :container "body"})
 
+  (when (and
+          (not= "denied" (.-permission js/Notification))
+          (not= "granted" (.-permission js/Notification)))
+    (.requestPermission js/Notification (fn [_])))
+
   (.config js/ZeroClipboard #js {:swfPath "/js/ZeroClipboard.swf"}))
 
 (defn- set-route-handler! [f]
   (swap! app-state assoc :route-component f))
-
-(defn- find-cursor [cursor condition]
-  (get cursor (first (keep-indexed #(when (condition %2) %1) cursor))))
 
 ;; TODO: set page titles on route
 
@@ -130,10 +169,14 @@
                    :found (or already-set found)})))))
 
 (defroute downloads-path "/downloads" []
+  (remove app-state :notify-download)
+  (add-watch app-state :notify-downloads notify-downloads)
   (set-route-handler! #(om/build downloads/downloads-list %)))
 
 ;; shouldn't find the download if the hashes already match
 (defroute download-path "/downloads/:hash" [hash]
+  (remove app-state :notify-downloads)
+  (add-watch app-state :notify-download notify-download)
   (set-route-handler!
     (fn [props]
       (let [already-set (= (get-in props [:download :hash]) hash)

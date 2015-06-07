@@ -190,12 +190,12 @@
     (response/response new-locks)))
 
 (defn load-torrent [{:keys [multipart-params] :as req}]
-  (let [current-user (users/current-user req)]
-    (apply rtorrent/load-torrent
-           (get-in multipart-params ["file" :tempfile])
-           (= "true" (get multipart-params "start"))
-           (rtorrent/on-load (:username current-user)))
-    (response/response {:success true})))
+  (let [current-user (users/current-user req)
+        hash (apply rtorrent/load-torrent
+              (get-in multipart-params ["file" :tempfile])
+              (= "true" (get multipart-params "start"))
+              (rtorrent/on-load (:username current-user)))]
+    (response/response {:success true :hash hash})))
 
 (defn load-magnet [{:keys [json-params] :as req}]
   (let [current-user (users/current-user req)]
