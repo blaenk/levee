@@ -26,7 +26,7 @@ cd "$target"
 
 touch .extracting
 
-for archive in $(find . -name '*.rar' -a \! \( -name '*.part??.rar' -a \! -name '*.part01.rar' \) -o -name '*.7z' -o -name '*.zip' -o -name '*.001'); do
+for archive in $(find . -name '*.rar' -a \! \( -name '*.part??.rar' -a \! -name '*.part01.rar' \) -a \! \( -name '*.part?.rar' -a \! -name '*.part1.rar' \) -o -name '*.7z' -o -name '*.zip' -o -name '*.001'); do
   dir_name=$(basename ${archive%.*})
   7z x $archive "-oextract/$dir_name" -y
 done
