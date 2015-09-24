@@ -2,7 +2,7 @@
   (:require
     [om.core :as om :include-macros true]
     [cljs.core.async :refer [chan <!]]
-    [secretary.core :as secretary :include-macros true :refer [defroute]]
+    [secretary.core :as secretary :refer-macros [defroute]]
     [sablono.core :as html :refer-macros [html]]
     [goog.events :as events]
     [goog.history.EventType :as EventType]

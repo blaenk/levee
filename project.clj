@@ -2,7 +2,7 @@
   :description "rtorrent interface"
   :url "https://github.com/blaenk/levee"
   :dependencies
-    [[org.clojure/clojure "1.6.0"]
+    [[org.clojure/clojure "1.7.0"]
      [org.clojure/core.async "0.1.303.0-886421-alpha"]
 
      [http-kit "2.1.19"]
@@ -37,7 +37,7 @@
      [necessary-evil "2.0.0" :exclusions [clj-time commons-codec]]
 
      ;; cljs
-     [org.clojure/clojurescript "0.0-2322"]
+     [org.clojure/clojurescript "1.7.48"]
      [secretary "1.2.1-20140627.190529-1"]
      [om "0.7.1"]
      [sablono "0.2.22"]
