@@ -19,3 +19,4 @@ pom.xml
 .lein-repl-history
 db/levee.dev.db
 profiles.clj
+db/levee.db
