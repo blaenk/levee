@@ -62,11 +62,15 @@
                                     :file %)
                          files))]))
 
-(defn file-search-view [{:keys [file-count file-settings is-tree]
+(defn file-search-view [{:keys [file-count file-settings is-tree editing]
                          :as props} owner]
   (reify
+    om/IInitState
+    (init-state [_]
+      {:toggle true})
+
     om/IRenderState
-    (render-state [_ {:keys [chan pattern]}]
+    (render-state [_ {:keys [chan pattern toggle]}]
       (html
         [:div.row
          [:div.col-lg-6.search.file-search
@@ -92,6 +96,36 @@
                 (if (:collapsed file-settings)
                   "glyphicon-chevron-down"
                   "glyphicon-chevron-up")}]]]
+
+           [:div.input-group-btn
+            {:style (when-not editing {:display "none"})}
+            [:button
+             {:type "button"
+              :class "btn btn-default dropdown-toggle"
+              :style {:border-right 0}
+              :data-toggle "button"
+              :data-placement "top"
+              :title
+                (if toggle
+                  "turn all files off"
+                  "turn all files on")
+              :data-original-title
+                (if toggle
+                  "turn all files off"
+                  "turn all files on")
+              :on-click
+              (fn [e]
+                (let [t (not toggle)]
+                  (om/set-state! owner :toggle t)
+                  (put! chan [:toggle t])))
+              }
+             ;; (if toggle "✔" "✖")
+             [:span
+              {:class
+                (if toggle
+                  "fa fa-check"
+                  "fa fa-times")}]
+             ]]
 
            [:input.form-control
             {:type "text"
@@ -257,12 +291,17 @@
         (go-loop []
           (let [[topic value :as msg] (<! chan)]
             (case topic
-              :pattern (if (not= (om/get-state owner :pattern) value)
+              :toggle (when (not= (om/get-state owner :toggle) value)
+                        (om/set-state! owner [:toggle] value)
+                        (let [root (om/get-state owner :root)
+                              [path {:keys [files folders]}] root]
+                          (toggle-file-tree value files folders)))
+              :pattern (when (not= (om/get-state owner :pattern) value)
                          (om/set-state! owner [:pattern] value)))
             (recur)))))
 
     om/IRenderState
-    (render-state [_ {:keys [pattern chan]}]
+    (render-state [_ {:keys [pattern chan toggle]}]
       (let [regex (common/fuzzy-search pattern)
             file-count (count files)
             filtered (filter #(.test regex (:path %)) files)
@@ -271,12 +310,14 @@
             filtered-extracted (filter #(.test regex (:path %)) (:extracted-files download))
             extracted-files-root (file-tree filtered-extracted)
             filtered-file-count (+ (count filtered) (count filtered-extracted))]
+        (om/set-state! owner [:root] root)
         (html
           [:div.files-section
            (when (> file-count 1)
              (om/build file-search-view
                {:file-count filtered-file-count
                 :file-settings file-settings
+                :editing editing
                 :is-tree (or
                            (contains? (second root) :folders)
                            (contains? (second extracted-files-root) :folders))}
@@ -297,6 +338,7 @@
                :download download
                :file-settings file-settings
                :collapsed? (:collapsed file-settings)
+               :enabled? toggle
                :editing editing}
               {:init-state {:root? true}})]])))))
 
