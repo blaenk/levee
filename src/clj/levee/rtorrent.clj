@@ -141,6 +141,22 @@
 ;; can also do view.persistent
 ;;   view.persistent "" v
 
+(defn disable-files-for-non-started [start? commands]
+  ;; if not starting, turn off all files
+  ;; this is a convenience because if we didn't start it, chances
+  ;; are that we don't want to download all of the files, only some of them
+  ;; this makes it easier to only select the files we want. equivalent to:
+  ;;
+  ;; (multicall
+  ;;  [:f.multicall "DDFC7BCBB9A5BDEDD6E021CE94AC4FBF0B066A23" +0 "f.set_priority=1"]
+  ;;  [:d.update_priorities "DDFC7BCBB9A5BDEDD6E021CE94AC4FBF0B066A23"])
+
+  (if (not start?)
+    (concat commands
+            ["f.multicall=,,f.set_priority=0"
+             "d.update_priorities="])
+    commands))
+
 (defn load-magnet
   "loads a magnet uri"
   [uri start? & commands]
@@ -155,7 +171,8 @@
   (let [contents (IOUtils/toByteArray (io/input-stream file))
         metadata (parse-metainfo contents)
         infohash (torrent-info-hash-str metadata)
-        method (if start? "load_raw_start" "load_raw")]
+        method (if start? "load_raw_start" "load_raw")
+        commands (disable-files-for-non-started start? commands)]
     (if commands
       (apply call method contents commands)
       (call method contents))
