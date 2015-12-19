@@ -142,6 +142,13 @@
              [:span.file-progress.badge disabled-tooltip (:progress file)]
              [:span.file-size.badge disabled-tooltip (common/filesize (:size file))])])))))
 
+(defn toggle-file-tree [toggle files folders]
+  (doseq [file files]
+    (om/transact! file #(assoc-in @file [:enabled] toggle)))
+
+  (doseq [[path {:keys [files folders] :as f}] folders]
+    (toggle-file-tree toggle files folders)))
+
 (defn count-files [[path {:keys [files folders]}]]
   (+ (count files)
      (if folders
@@ -152,19 +159,26 @@
                     download :download
                     file-settings :file-settings
                     collapsed? :collapsed?
+                    enabled? :enabled?
                     editing :editing
                     :as props} owner]
   (reify
     om/IInitState
     (init-state [_]
       {:collapsed collapsed?
-       :enabled true})
+       :enabled enabled?
+       })
 
     om/IWillReceiveProps
     (will-receive-props [this next-props]
       (when-not (= (:collapsed? (om/get-props owner))
                    (:collapsed? next-props))
-        (om/set-state! owner :collapsed (:collapsed? next-props))))
+        (om/set-state! owner :collapsed (:collapsed? next-props)))
+
+      (when-not (= (:enabled? (om/get-props owner))
+                   (:enabled? next-props))
+        (om/set-state! owner :enabled (:enabled? next-props)))
+      )
 
     om/IRenderState
     (render-state [_ {:keys [collapsed root? enabled]}]
@@ -178,10 +192,14 @@
               (fn [e]
                 (.stopPropagation e)
 
+                ;; recursive toggle should apply here
                 (let [toggle (not enabled)]
-                  (doseq [file files]
-                    (om/transact! file #(assoc-in @file [:enabled] toggle)))
-                  (om/set-state! owner :enabled toggle)))}
+                  (om/set-state! owner :enabled toggle)
+                  (toggle-file-tree toggle files folders)
+                  ))}
+             ;; TODO
+             ;; if all files and folders are disabled,
+             ;; the folder should be disabled as well
              (if enabled "✔" "✖")])
           [:span.folder-name path]
           [:span.badge
@@ -200,6 +218,7 @@
                              :download download
                              :file-settings file-settings
                              :collapsed? (:collapsed file-settings)
+                             :enabled? enabled
                              :editing editing}
                             {:react-key (first %)})
                  (sort #(common/compare-ignore-case (first %1) (first %2)) folders))])]))))
