@@ -142,6 +142,12 @@
              [:span.file-progress.badge disabled-tooltip (:progress file)]
              [:span.file-size.badge disabled-tooltip (common/filesize (:size file))])])))))
 
+(defn count-files [[path {:keys [files folders]}]]
+  (+ (count files)
+     (if folders
+       (reduce + (map count-files folders))
+       0)))
+
 (defn folder-view [{[path {:keys [files folders]}] :folder
                     download :download
                     file-settings :file-settings
@@ -182,7 +188,8 @@
            {:data-toggle "tooltip"
             :data-placement "top"
             :title "files in folder"}
-           (str (count files))]]
+           (str (count-files (:folder props)))
+           ]]
          (when (or root? (not collapsed))
            [:div.entities
             (map #(om/build file-view {:file % :download download :editing editing}
