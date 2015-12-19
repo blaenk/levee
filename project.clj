@@ -85,7 +85,7 @@
        :plugins
          [[lein-environ "1.0.0"]
           [lein-cljsbuild "1.0.3"]
-          [lein-figwheel "0.1.4-SNAPSHOT"]
+          [lein-figwheel "0.5.0-2"]
           [lein-shell "0.4.0"]
           [lein-ancient "0.5.5"]
           [jonase/eastwood "0.1.4"]]
@@ -95,7 +95,7 @@
           [org.clojure/tools.trace "0.7.8"]
           [org.clojure/tools.nrepl "0.2.4"]
           [cider/cider-nrepl "0.7.0"]
-          [figwheel "0.1.4-SNAPSHOT"]
+          [figwheel "0.5.0-2"]
           [com.cemerick/piggieback "0.1.3"]
           [im.chit/vinyasa "0.2.2"
            :exclusions [org.codehaus.plexus/plexus-utils]]]
