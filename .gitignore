@@ -21,3 +21,4 @@ db/levee.dev.db
 profiles.clj
 db/levee.db
 bin/levee
+figwheel_server.log
