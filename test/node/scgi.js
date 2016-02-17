@@ -12,7 +12,7 @@ describe('SCGI', () => {
       REQUEST_URI: "/deepthought"
     }, "What is the answer to life, the Universe and everything?");
 
-    const answer =
+    const raw =
       "70:" +
       "CONTENT_LENGTH" + '\x00' + "56" + '\x00' +
         "SCGI" + '\x00' +  "1" + '\x00' +
@@ -21,7 +21,7 @@ describe('SCGI', () => {
         "," +
       "What is the answer to life, the Universe and everything?";
 
-    assert.equal(answer, request);
+    assert.equal(raw, request);
   });
 
   it('should parse a response', () => {
