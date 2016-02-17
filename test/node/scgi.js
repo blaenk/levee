@@ -33,8 +33,8 @@ describe('SCGI', () => {
 
     const parsed = scgi.parseResponse(response);
 
-    assert.equal(parsed.body, '42');
-    assert.equal(parsed.headers['Status'], '200 OK');
-    assert.equal(parsed.headers['Content-Type'], 'text/plain');
+    assert.equal('42', parsed.body);
+    assert.equal('200 OK', parsed.headers['Status']);
+    assert.equal('text/plain', parsed.headers['Content-Type']);
   });
 });
