@@ -1,3 +1,8 @@
+node_modules/
+lib/
+.env
+.tern-port
+
 /target
 /lib
 /classes
@@ -18,7 +23,7 @@ pom.xml
 .repl
 .lein-repl-history
 db/levee.dev.db
-profiles.clj
 db/levee.db
 bin/levee
+profiles.clj
 figwheel_server.log
