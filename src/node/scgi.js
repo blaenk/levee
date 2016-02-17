@@ -29,16 +29,14 @@ const buildRequest = (headers, body) => {
   return `${header.length}:${header},${body}`;
 };
 
-// option can be anything that that socket.connect can take
+// options can be anything that that socket.connect can take
 // port, host, path, etc.
 // as well as an optional 'headers' key specifying an object
 // of header-value pairs
 // https://nodejs.org/api/net.html#net_socket_connect_options_connectlistener
-const request = (option, body) => {
+const request = (options, body) => {
   return new Bluebird((resolve, reject) => {
-    const headers = option.headers || {};
-    const connection = net.connect(option);
-
+    const connection = net.connect(options);
     let response = "";
 
     connection.on('data', (data) => {
@@ -53,7 +51,7 @@ const request = (option, body) => {
       reject(err);
     });
 
-    connection.write(buildRequest(headers, body));
+    connection.write(buildRequest(options.headers || {}, body));
     connection.end();
   });
 };
