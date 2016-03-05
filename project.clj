@@ -5,7 +5,7 @@
     [[org.clojure/clojure "1.7.0"]
      [org.clojure/core.async "0.1.303.0-886421-alpha"]
 
-     [http-kit "2.1.19"]
+     [http-kit "2.2.0-alpha1"]
      [ring "1.3.1"]
      [ring/ring-json "0.3.1"]
      [ring-accept-param "0.1.1"]
